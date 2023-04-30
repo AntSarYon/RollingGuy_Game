@@ -45,23 +45,17 @@ public class PlayerMovement : MonoBehaviour
 
     //------------------------------------------------------------
 
-    private void Start()
-    {
-
-    }
-
-    //------------------------------------------------------------
-
-    private void Update()
+    private void ActualizarVelocidades()
     {
         //Actualizamos la velocidad en base a los Inputs
         mRb.velocity = new Vector2(
             mMoveInput.x * runSpeed,
             mRb.velocity.y
         );
+    }
 
-        // - - - - - - - - - - - - - - - - - - - - - - - -
-
+    private void ControlarMovimientoHorizontal()
+    {
         //Si recibimos algun input de movimeinto en X...
         if (Mathf.Abs(mRb.velocity.x) > Mathf.Epsilon)
         {
@@ -71,18 +65,20 @@ public class PlayerMovement : MonoBehaviour
                 transform.localScale.y,
                 transform.localScale.z
             );
-            
+
             //Activamos el FlagDeAnimación para correr
             mAnimator.SetBool("IsRunning", true);
         }
         //En caso no se esté recibiendo ningún input de movimiento en X
-        else {
+        else
+        {
             //Desactivamos el FlagDeAnimación para correr
             mAnimator.SetBool("IsRunning", false);
         }
+    }
 
-        // - - - - - - - - - - - - - - - - - - - - - - -
-
+    private void ControlarMovimientoVertical()
+    {
         //Si estamos descendiendo, y no estamos en contacto con el suelo
         if (mRb.velocity.y < -12.0f && !mCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
         {
@@ -90,18 +86,7 @@ public class PlayerMovement : MonoBehaviour
             mAnimator.SetBool("IsFalling", true);
             mAnimator.SetBool("IsJumping", false);
             mAnimator.SetBool("IsDoubleJumping", false);
-            
-            /*
-            //Si el RayCast detecta que estamos muy cerca del suelo
-            if (raycastSuelo == true)
-            {
-                print("Piso muy cerca");
 
-                //Desactivamos los FlagDeAnimación de Salto y Activamos el de Caida 
-                mAnimator.SetBool("IsJumping", false);
-                mAnimator.SetBool("IsDoubleJumping", false);
-                mAnimator.SetBool("IsFalling", true);
-            }*/
         }
 
         // - - - - - - - - - - - - - - - - - - - - - - -
@@ -115,12 +100,22 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Si estamos cayendo, y estamos próximos a pisar una superficie, o nos encontramos en ella
-        if (mRb.velocity.y <= 0 && Physics2D.Raycast(transform.position,Vector2.down,1.35f, capaTerreno) == true)
+        if (mRb.velocity.y <= 0 && Physics2D.Raycast(transform.position, Vector2.down, 1.35f, capaTerreno) == true)
         {
             //Desactivamos la animación de salto
             mAnimator.SetBool("IsJumping", false);
         }
-        
+    }
+
+    //------------------------------------------------------------
+
+    private void Update()
+    {
+        ActualizarVelocidades();
+
+        // - - - - - - - - - - - - - - - - - - - - - - - -
+        ControlarMovimientoHorizontal();
+        ControlarMovimientoVertical();
 
     }
 
@@ -191,6 +186,8 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
+
+    //------------------------------------------------------------
 
     private void OnDrawGizmos()
     {
