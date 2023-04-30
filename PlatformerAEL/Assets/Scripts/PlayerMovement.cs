@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     //Velocidad del Salto
     [SerializeField]
     private float jumpSpeed = 10f;
+    private float secondJumpSpeed = 20f;
 
     //Vector Input de movimiento
     private Vector2 mMoveInput;
@@ -30,6 +31,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     private LayerMask capaTerreno;
 
+    private bool enPared;
+
     private bool canAttack;
     private bool isAttacking;
 
@@ -41,10 +44,13 @@ public class PlayerMovement : MonoBehaviour
         mAnimator = GetComponent<Animator>();
         mCollider = GetComponent<CapsuleCollider2D>();
         mAudioSource = GetComponent<AudioSource>();
+
+        canAttack = false;
+        isAttacking = false;
+        enPared = false;
     }
 
     //------------------------------------------------------------
-
     private void ActualizarVelocidades()
     {
         //Actualizamos la velocidad en base a los Inputs
@@ -79,32 +85,57 @@ public class PlayerMovement : MonoBehaviour
 
     private void ControlarMovimientoVertical()
     {
-        //Si estamos descendiendo, y no estamos en contacto con el suelo
-        if (mRb.velocity.y < -12.0f && !mCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
+            //Si estamos cayendo a gran velocidad y hay suelo proximo
+            if (mRb.velocity.y < -11.0f)
+            {
+                //Desactivamos el FlagDeAnimacion del Salto, y activamos el de Caida
+                mAnimator.SetBool("IsFalling", true);
+                mAnimator.SetBool("IsJumping", false);
+                mAnimator.SetBool("IsDoubleJumping", false);
+            }
+
+            //Si estamos cayendo, y estamos cerca a una superficie
+            if (mRb.velocity.y <= 0 && HaySueloProximo())
+            {
+                //Desactivamos las animaciones de salto
+                mAnimator.SetBool("IsJumping", false);
+                mAnimator.SetBool("IsDoubleJumping", false);
+                mAnimator.SetBool("IsFalling", false);
+
+                //Reseteamos el Flag de CanAttack
+                canAttack = false;
+            }
+        //}
+    }
+
+    private void ControlarSaltosDePared()
+    {
+        Vector3 posicionReferencia = new Vector3(transform.position.x, transform.position.y-0.30f, transform.position.z);
+        
+        RaycastHit2D rcLeft = Physics2D.Raycast(posicionReferencia, Vector2.left, 0.53f, capaTerreno);
+        RaycastHit2D rcRight = Physics2D.Raycast(posicionReferencia, Vector2.right, 0.53f, capaTerreno);
+
+        //Si los raycast detectan terreno al cual aferrarse
+        if (rcLeft || rcRight)
         {
-            //Desactivamos el FlagDeAnimacion del Salto, y activamos el de Caida
-            mAnimator.SetBool("IsFalling", true);
-            mAnimator.SetBool("IsJumping", false);
+            print("Chocando con Pared");
+
+            //Activamos los Flag de Pared Próxima
+            enPared = true;
+            mAnimator.SetBool("WallNear", true);
+
+            //Desactivamos los FlagDeAnimacion de Salto
             mAnimator.SetBool("IsDoubleJumping", false);
-
-        }
-
-        // - - - - - - - - - - - - - - - - - - - - - - -
-
-        //Si el Collider colisiona con una plataforma
-        if (mCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
-        {
-            // Toco el suelo, y desactivo los FlagDeAnimacion de Caida y de saltos
-            mAnimator.SetBool("IsFalling", false);
-            mAnimator.SetBool("IsDoubleJumping", false);
-        }
-
-        //Si estamos cayendo, y estamos próximos a pisar una superficie, o nos encontramos en ella
-        if (mRb.velocity.y <= 0 && Physics2D.Raycast(transform.position, Vector2.down, 1.35f, capaTerreno) == true)
-        {
-            //Desactivamos la animación de salto
             mAnimator.SetBool("IsJumping", false);
         }
+
+        else
+        {
+            //Caso contrario, lo desactivamos
+            enPared = false;
+            mAnimator.SetBool("WallNear", false);
+        }
+            
     }
 
     //------------------------------------------------------------
@@ -113,8 +144,10 @@ public class PlayerMovement : MonoBehaviour
     {
         ActualizarVelocidades();
 
-        // - - - - - - - - - - - - - - - - - - - - - - - -
         ControlarMovimientoHorizontal();
+
+        ControlarSaltosDePared();
+
         ControlarMovimientoVertical();
 
     }
@@ -137,60 +170,91 @@ public class PlayerMovement : MonoBehaviour
         //Si se ha oprimido el Botón
         if (value.isPressed)
         {
-            // Si estamos tocando el suelo...
-            if (mCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
+            print("AQUI 1");
+            // Si aun no ha saltado, 
+            if (canAttack == false)
             {
-                // Saltamos (agregamos velocidad en Y)
-                mRb.velocity = new Vector2(
-                    mRb.velocity.x,
-                    jumpSpeed
-                );
-
-                //Activamos el FlagDeAnimacion de Jumping
-                mAnimator.SetBool("IsJumping", true);
-                mAudioSource.PlayOneShot(saltos[0], 0.75f);
-
-                //Activamos el Flag para indicar que
-                //es posible Atacar
-                canAttack = true;
-            }
-
-            //Si no está tocando el suelo
-            else
-            {
-                // - - - - - - - - - - - - - - - - - - - - - - -
-                //RAYCAST hacia el suelo --> Comprobamos si se esta a una distancia corta del suelo
-
-                //Si ya está saltando, y se encuentra a una distancia considerable del suelo
-                if (
-                    mAnimator.GetBool("IsJumping")
-                    && canAttack
-                    && Physics2D.Raycast(transform.position, Vector2.down, 1.35f, capaTerreno) == false)
+                //Si se encuentra sobre un suelo, o pegado a una pared
+                if (HaySueloProximo() || enPared == true)
                 {
-                    //Le daremos velocidad de salto
+                    // Saltamos (agregamos velocidad en Y)
                     mRb.velocity = new Vector2(
                         mRb.velocity.x,
                         jumpSpeed
+                    );
+
+                    //Activamos el FlagDeAnimacion de Jumping
+                    mAnimator.SetBool("IsJumping", true);
+                    mAudioSource.PlayOneShot(saltos[0], 0.75f);
+
+                    //Activamos el Flag para indicar que
+                    //es posible Atacar
+                    canAttack = true;
+                }
+            }
+
+            //Si ya realizó su primer salto, y puede ejecutar un segundo...
+            if (canAttack)
+            {;
+                //Si se encuentra a una distancia considerable del suelo, y no está cerca de ninguna pared
+                if (HaySueloProximo()== false && enPared==false)
+                {
+                    print("AQUI 2");
+                    //Le daremos otro salto
+                    mRb.velocity = new Vector2(
+                        mRb.velocity.x,
+                        secondJumpSpeed
                     );
 
                     //Activamos el FlagDeAnimacion de DobleJumping
                     mAnimator.SetBool("IsDoubleJumping", true);
                     mAudioSource.PlayOneShot(saltos[1], 0.75f);
 
-                    //Activamos el Flag de ataque
+                    //Activamos el Flag para indicar que esta atacando
                     isAttacking = true;
 
                     //Desactivamos el Flag para que ya no pueda efectuar otro ataque
                     canAttack = false;
                 }
+
+                //Si está cerca de una pared, sea cual sea su altura
+                else if ((HaySueloProximo() == false && enPared == true) || (HaySueloProximo() && enPared))
+                {
+                    //Le permitimos hacer un salto normal
+                    mRb.velocity = new Vector2(
+                        mRb.velocity.x,
+                        jumpSpeed
+                    );
+
+                    //Activamos el FlagDeAnimacion de Jumping
+                    mAnimator.SetBool("IsJumping", true);
+                    mAudioSource.PlayOneShot(saltos[0], 0.75f);
+
+                    //Desctivamos el Flag para indicar que No esta atacando
+                    isAttacking = false;
+
+                    //Dejamos el Flag activado para que pueda efectuar un ataque
+                    canAttack = true;
+                }
             }
         }
+            
     }
 
     //------------------------------------------------------------
 
+    private bool HaySueloProximo()
+    {
+        //Usamos un RayCast para determinar si debajo nuestro hay un suelo cercano
+        return Physics2D.Raycast(transform.position, Vector2.down, 1.50f, capaTerreno);
+    }
+
     private void OnDrawGizmos()
     {
-        Gizmos.DrawRay(transform.position, Vector2.down * 1.35f);
+        Gizmos.DrawRay(transform.position, Vector2.down * 1.50f);
+
+        Vector3 posicionReferencia = new Vector3(transform.position.x, transform.position.y - 0.30f, transform.position.z);
+        Gizmos.DrawRay(posicionReferencia, Vector2.left * 0.53f);
+        Gizmos.DrawRay(posicionReferencia, Vector2.right * 0.53f);
     }
 }
