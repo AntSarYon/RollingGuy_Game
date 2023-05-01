@@ -5,11 +5,11 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    //Velocidad de Movimiento
+    [Header("Velocidad de Movimiento")]
     [SerializeField]
     private float runSpeed = 4f;
 
-    //Velocidad del Salto
+    [Header("Velocidad de Salto")]
     [SerializeField]
     private float jumpSpeed = 10f;
     private float secondJumpSpeed = 20f;
@@ -23,11 +23,11 @@ public class PlayerMovement : MonoBehaviour
     private CapsuleCollider2D mCollider;
     private AudioSource mAudioSource;
 
-    //Clips de Audio
+    [Header("Sonidos de Salto")]
     [SerializeField]
     private AudioClip[] saltos = new AudioClip[2];
 
-    //Capa del terreno a analizar
+    [Header("Capa de las plataformas")]
     [SerializeField]
     private LayerMask capaTerreno;
 
@@ -40,18 +40,20 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
+        //Obtenemos componentes
         mRb = GetComponent<Rigidbody2D>();
         mAnimator = GetComponent<Animator>();
         mCollider = GetComponent<CapsuleCollider2D>();
         mAudioSource = GetComponent<AudioSource>();
 
+        //Inicializamos
         canAttack = false;
         isAttacking = false;
         enPared = false;
     }
 
     //------------------------------------------------------------
-    private void ActualizarVelocidades()
+    private void ActualizarVelocidadEnX()
     {
         //Actualizamos la velocidad en base a los Inputs
         mRb.velocity = new Vector2(
@@ -110,16 +112,16 @@ public class PlayerMovement : MonoBehaviour
 
     private void ControlarSaltosDePared()
     {
+        //Obtenemos una posicion referencial sobre el centro de nuestro personaje
         Vector3 posicionReferencia = new Vector3(transform.position.x, transform.position.y-0.30f, transform.position.z);
         
+        //Creamos 2 raycast hacia ambos lados para comprobar si hay una plataforma (muro) cerca
         RaycastHit2D rcLeft = Physics2D.Raycast(posicionReferencia, Vector2.left, 0.53f, capaTerreno);
         RaycastHit2D rcRight = Physics2D.Raycast(posicionReferencia, Vector2.right, 0.53f, capaTerreno);
 
         //Si los raycast detectan terreno al cual aferrarse
         if (rcLeft || rcRight)
         {
-            print("Chocando con Pared");
-
             //Activamos los Flag de Pared Próxima
             enPared = true;
             mAnimator.SetBool("WallNear", true);
@@ -142,7 +144,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        ActualizarVelocidades();
+        ActualizarVelocidadEnX();
 
         ControlarMovimientoHorizontal();
 
@@ -153,7 +155,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     //---------------------------------------------------------------------
-    //--- Función OnMove; activada al desplazarnos a la derecha o izquierda
+    //--- Función OnMove; activada al detectarse Inputs para el eje X
     //---------------------------------------------------------------------
     private void OnMove(InputValue value)
     {
@@ -170,7 +172,6 @@ public class PlayerMovement : MonoBehaviour
         //Si se ha oprimido el Botón
         if (value.isPressed)
         {
-            print("AQUI 1");
             // Si aun no ha saltado, 
             if (canAttack == false)
             {
@@ -199,7 +200,6 @@ public class PlayerMovement : MonoBehaviour
                 //Si se encuentra a una distancia considerable del suelo, y no está cerca de ninguna pared
                 if (HaySueloProximo()== false && enPared==false)
                 {
-                    print("AQUI 2");
                     //Le daremos otro salto
                     mRb.velocity = new Vector2(
                         mRb.velocity.x,
@@ -245,13 +245,25 @@ public class PlayerMovement : MonoBehaviour
 
     private bool HaySueloProximo()
     {
+        //Obtenemos posiciones de referencia para ambas piernas
+        Vector3 posicionReferenciaX1 = new Vector3(transform.position.x - 0.35f, transform.position.y - 0.30f, transform.position.z);
+        Vector3 posicionReferenciaX2 = new Vector3(transform.position.x + 0.35f, transform.position.y - 0.30f, transform.position.z);
+
         //Usamos un RayCast para determinar si debajo nuestro hay un suelo cercano
-        return Physics2D.Raycast(transform.position, Vector2.down, 1.50f, capaTerreno);
+        RaycastHit2D rc1 = Physics2D.Raycast(posicionReferenciaX1, Vector2.down, 1.50f, capaTerreno);
+        RaycastHit2D rc2 = Physics2D.Raycast(posicionReferenciaX2, Vector2.down, 1.50f, capaTerreno);
+
+        //Bastará con que solo haya 1 ray chocando para ser Verdad
+        return (rc1 || rc2);
     }
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawRay(transform.position, Vector2.down * 1.50f);
+        Vector3 posicionReferenciaX1 = new Vector3(transform.position.x-0.35f, transform.position.y - 0.30f, transform.position.z);
+        Vector3 posicionReferenciaX2 = new Vector3(transform.position.x+0.35f, transform.position.y - 0.30f, transform.position.z);
+
+        Gizmos.DrawRay(posicionReferenciaX1, Vector2.down * 1.50f);
+        Gizmos.DrawRay(posicionReferenciaX2, Vector2.down * 1.50f);
 
         Vector3 posicionReferencia = new Vector3(transform.position.x, transform.position.y - 0.30f, transform.position.z);
         Gizmos.DrawRay(posicionReferencia, Vector2.left * 0.53f);
