@@ -87,8 +87,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void ControlarMovimientoVertical()
     {
-            //Si estamos cayendo a gran velocidad y hay suelo proximo
-            if (mRb.velocity.y < -11.0f)
+        //Si estamos cayendo a gran velocidad
+        if (mRb.velocity.y < -11.0f)
             {
                 //Desactivamos el FlagDeAnimacion del Salto, y activamos el de Caida
                 mAnimator.SetBool("IsFalling", true);
@@ -97,7 +97,7 @@ public class PlayerMovement : MonoBehaviour
             }
 
             //Si estamos cayendo, y estamos cerca a una superficie
-            if (mRb.velocity.y <= 0 && HaySueloProximo())
+            if (mRb.velocity.y < 0 && HaySueloProximo()) //Aqui era <= <------------------------------
             {
                 //Desactivamos las animaciones de salto
                 mAnimator.SetBool("IsJumping", false);
@@ -107,7 +107,6 @@ public class PlayerMovement : MonoBehaviour
                 //Reseteamos el Flag de CanAttack
                 canAttack = false;
             }
-        //}
     }
 
     private void ControlarSaltosDePared()
