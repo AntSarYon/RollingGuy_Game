@@ -3,7 +3,12 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Water
+  - Ground
+  - Props
+  - Obstacle
+  - Checkpoint
   layers:
   - Default
   - TransparentFX
@@ -13,8 +18,8 @@ TagManager:
   - UI
   - Ground
   - Obstacles
-  - 
-  - 
+  - Props
+  - Checkpoint
   - 
   - 
   - 
@@ -49,6 +54,9 @@ TagManager:
     locked: 0
   - name: Platforms
     uniqueID: 740856315
+    locked: 0
+  - name: Checkpoint
+    uniqueID: 2926822779
     locked: 0
   - name: Obstacles
     uniqueID: 2837981303
