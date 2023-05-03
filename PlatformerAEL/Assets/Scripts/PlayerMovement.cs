@@ -7,12 +7,12 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Velocidad de Movimiento")]
     [SerializeField]
-    private float runSpeed = 4f;
+    private float runSpeed;
 
     [Header("Velocidad de Salto")]
     [SerializeField]
     private float jumpSpeed = 10f;
-    private float secondJumpSpeed = 20f;
+    private float secondJumpSpeed = 20f; 
 
     //Vector Input de movimiento
     private Vector2 mMoveInput;
@@ -67,20 +67,20 @@ public class PlayerMovement : MonoBehaviour
         //Si recibimos algun input de movimeinto en X...
         if (Mathf.Abs(mRb.velocity.x) > Mathf.Epsilon)
         {
-            //Modificamos la Escala, y la Dirección del Sprite en base a si es (+) o (-)
+            //Modificamos la Escala, y la Direcciï¿½n del Sprite en base a si es (+) o (-)
             transform.localScale = new Vector3(
                 Mathf.Sign(mRb.velocity.x),
                 transform.localScale.y,
                 transform.localScale.z
             );
 
-            //Activamos el FlagDeAnimación para correr
+            //Activamos el FlagDeAnimaciï¿½n para correr
             mAnimator.SetBool("IsRunning", true);
         }
-        //En caso no se esté recibiendo ningún input de movimiento en X
+        //En caso no se estï¿½ recibiendo ningï¿½n input de movimiento en X
         else
         {
-            //Desactivamos el FlagDeAnimación para correr
+            //Desactivamos el FlagDeAnimaciï¿½n para correr
             mAnimator.SetBool("IsRunning", false);
         }
     }
@@ -97,7 +97,7 @@ public class PlayerMovement : MonoBehaviour
             }
 
             //Si estamos cayendo, y estamos cerca a una superficie
-            if (mRb.velocity.y < 0 && HaySueloProximo()) //Aqui era <= <------------------------------
+            if (mRb.velocity.y <= 0.01f && HaySueloProximo()) //Aqui era <= <------------------------------
             {
                 //Desactivamos las animaciones de salto
                 mAnimator.SetBool("IsJumping", false);
@@ -121,7 +121,7 @@ public class PlayerMovement : MonoBehaviour
         //Si los raycast detectan terreno al cual aferrarse
         if (rcLeft || rcRight)
         {
-            //Activamos los Flag de Pared Próxima
+            //Activamos los Flag de Pared Prï¿½xima
             enPared = true;
             mAnimator.SetBool("WallNear", true);
 
@@ -154,7 +154,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     //---------------------------------------------------------------------
-    //--- Función OnMove; activada al detectarse Inputs para el eje X
+    //--- Funciï¿½n OnMove; activada al detectarse Inputs para el eje X
     //---------------------------------------------------------------------
     private void OnMove(InputValue value)
     {
@@ -164,11 +164,11 @@ public class PlayerMovement : MonoBehaviour
     }
 
     //---------------------------------------------------------------------
-    //--- Función OnJump; activada al oprimir el boton de Salto
+    //--- Funciï¿½n OnJump; activada al oprimir el boton de Salto
     //---------------------------------------------------------------------
     private void OnJump(InputValue value)
     {
-        //Si se ha oprimido el Botón
+        //Si se ha oprimido el Botï¿½n
         if (value.isPressed)
         {
             // Si aun no ha saltado, 
@@ -193,10 +193,10 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
 
-            //Si ya realizó su primer salto, y puede ejecutar un segundo...
+            //Si ya realizï¿½ su primer salto, y puede ejecutar un segundo...
             if (canAttack)
             {;
-                //Si se encuentra a una distancia considerable del suelo, y no está cerca de ninguna pared
+                //Si se encuentra a una distancia considerable del suelo, y no estï¿½ cerca de ninguna pared
                 if (HaySueloProximo()== false && enPared==false)
                 {
                     //Le daremos otro salto
@@ -216,7 +216,7 @@ public class PlayerMovement : MonoBehaviour
                     canAttack = false;
                 }
 
-                //Si está cerca de una pared, sea cual sea su altura
+                //Si estï¿½ cerca de una pared, sea cual sea su altura
                 else if ((HaySueloProximo() == false && enPared == true) || (HaySueloProximo() && enPared))
                 {
                     //Le permitimos hacer un salto normal
@@ -249,10 +249,10 @@ public class PlayerMovement : MonoBehaviour
         Vector3 posicionReferenciaX2 = new Vector3(transform.position.x + 0.35f, transform.position.y - 0.30f, transform.position.z);
 
         //Usamos un RayCast para determinar si debajo nuestro hay un suelo cercano
-        RaycastHit2D rc1 = Physics2D.Raycast(posicionReferenciaX1, Vector2.down, 1.50f, capaTerreno);
-        RaycastHit2D rc2 = Physics2D.Raycast(posicionReferenciaX2, Vector2.down, 1.50f, capaTerreno);
+        RaycastHit2D rc1 = Physics2D.Raycast(posicionReferenciaX1, Vector2.down, 0.71f, capaTerreno);
+        RaycastHit2D rc2 = Physics2D.Raycast(posicionReferenciaX2, Vector2.down, 0.71f, capaTerreno);
 
-        //Bastará con que solo haya 1 ray chocando para ser Verdad
+        //Bastarï¿½ con que solo haya 1 ray chocando para ser Verdad
         return (rc1 || rc2);
     }
 
@@ -261,8 +261,8 @@ public class PlayerMovement : MonoBehaviour
         Vector3 posicionReferenciaX1 = new Vector3(transform.position.x-0.35f, transform.position.y - 0.30f, transform.position.z);
         Vector3 posicionReferenciaX2 = new Vector3(transform.position.x+0.35f, transform.position.y - 0.30f, transform.position.z);
 
-        Gizmos.DrawRay(posicionReferenciaX1, Vector2.down * 1.50f);
-        Gizmos.DrawRay(posicionReferenciaX2, Vector2.down * 1.50f);
+        Gizmos.DrawRay(posicionReferenciaX1, Vector2.down * 0.71f);
+        Gizmos.DrawRay(posicionReferenciaX2, Vector2.down * 0.71f);
 
         Vector3 posicionReferencia = new Vector3(transform.position.x, transform.position.y - 0.30f, transform.position.z);
         Gizmos.DrawRay(posicionReferencia, Vector2.left * 0.53f);
