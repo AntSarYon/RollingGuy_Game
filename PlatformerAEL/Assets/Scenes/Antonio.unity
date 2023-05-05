@@ -285,7 +285,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.7082205, y: 2.4119434, z: -10}
+  m_LocalPosition: {x: -4.4097357, y: 2.4411745, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -699,7 +699,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 740856315
-  m_SortingLayer: 3
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -3646,7 +3646,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1659892999
-  m_SortingLayer: 6
+  m_SortingLayer: 7
   m_SortingOrder: 0
   m_Sprite: {fileID: -786216452, guid: 06e58cdcdfa79264a82dd00efb7cb90b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -3758,6 +3758,7 @@ MonoBehaviour:
   saltos:
   - {fileID: 8300000, guid: 028377813207e08458a1c37422fb77b3, type: 3}
   - {fileID: 8300000, guid: f7d8982940aef8744b92ab368fcef3e1, type: 3}
+  clipAtaque: {fileID: 8300000, guid: 846b35dcd1531854388dbe0a72f13468, type: 3}
   capaTerreno:
     serializedVersion: 2
     m_Bits: 64
@@ -5176,7 +5177,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 425464171
-  m_SortingLayer: 5
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
