@@ -7,16 +7,21 @@ using UnityEngine.UIElements;
 
 public class PlayerMovement : MonoBehaviour
 {
+    //Referencia al GameManager
     private GameManager gameManager;
 
     [Header("Velocidad de Movimiento")]
     [SerializeField]
-    private float runSpeed;
+    private float runSpeed = 7f;
 
     [Header("Velocidad de Salto")]
     [SerializeField]
     private float jumpSpeed = 10f;
-    private float secondJumpSpeed = 20f; 
+    private float secondJumpSpeed = 20f;
+
+    [Header("Velocidad de Retroceso")]
+    [SerializeField]
+    private float BackSpeed = 12f;
 
     //Vector Input de movimiento
     private Vector2 mMoveInput;
@@ -43,13 +48,28 @@ public class PlayerMovement : MonoBehaviour
 
     private bool canDoubleJump;
 
+    //Flag cuando está atacando
     private bool isAttacking;
-    private float attackMoveMultiplier = 1f;
+
+    //Componentes del ataque.
+    private float attackMoveMultiplier;
     private float attackDamage;
 
-    private bool takeAttackTime = false;
-    private float actualAttackTime = 0.0f;
-    private float maxAttackTime = 1f;
+    //Flag cuando esta siendo atacado
+    private bool isBeingDamage;
+
+    //Controlamos el tiempo que emplea para atacar
+    private bool takeAttackTime;
+    private float actualAttackTime;
+    private float maxAttackTime;
+
+    //Controlamos el tiempo que emplea para Retroceder
+    private bool takeHitTime;
+    private float actualHitTime;
+    private float maxHitTime;
+
+    //contenedor de su ultima dirección
+    private float ultimaDirección;
 
     //-----------------------------------------------------------
 
@@ -66,8 +86,22 @@ public class PlayerMovement : MonoBehaviour
 
         //Inicializamos
         canDoubleJump = false;
+
+        isBeingDamage = false;
         isAttacking = false;
-        enPared = false;
+
+        attackMoveMultiplier = 1f;
+        attackDamage = 100f;
+
+        takeAttackTime = false;
+        actualAttackTime = 0.0f;
+        maxAttackTime = 0.6f;
+
+        takeHitTime = false;
+        actualHitTime = 0.0f;
+        maxHitTime = 0.5f;
+
+    enPared = false;
     }
 
     //--------------------------------------------------------------
@@ -90,7 +124,15 @@ public class PlayerMovement : MonoBehaviour
     // Comportamiento cuando YO sufra daño
     private void OnPlayerDamageDelegate(object sender, EventArgs e)
     {
-        print("Jugador Dañado");
+        //Obtenemos la ultima direccion a la cual nos dirigiamos antes de impactar
+        ultimaDirección = MathF.Sign(mRb.velocity.x);
+
+        //Activamos el Flag de recibiendo daño
+        isBeingDamage = true;
+
+        //Modificamos el Flag para indicar que debemos tomar el tiempo desde ahora 
+        takeHitTime = true;
+        
     }
 
     //------------------------------------------------------------
@@ -220,20 +262,68 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void ControlarTiempoDeRetroceso()
+    {
+        //Si debemos calcular el tiempo desde el golpe
+        if (takeHitTime)
+        {
+            //Le vamos agregamos el DeltaTime;
+            actualHitTime += Time.deltaTime;
+
+            //Si el tiempo de ataque actual excede al medio segundo.
+            if (actualHitTime >= maxHitTime)
+            {
+                //Reiniciamos todos los valores y Flag
+                mAnimator.SetBool("IsBeingHit", false);
+                takeHitTime = false;
+                isBeingDamage = false;
+
+                //Devolvemos el tiempo de Retroceso actual a 0
+                actualHitTime = 0f;
+            }
+        }
+    }
+
     //------------------------------------------------------------
 
     private void Update()
     {
-        ControlarAtaque();
+        //Si el jugador NO esta siendo atacado
+        if (!isBeingDamage)
+        {
+            //Ejectamos sus funciones de movimiento con normalidad
 
-        ActualizarVelocidadEnX();
+            ControlarAtaque();
 
-        ControlarMovimientoHorizontal();
+            ActualizarVelocidadEnX();
 
-        ControlarSaltosDePared();
+            ControlarMovimientoHorizontal();
 
-        ControlarMovimientoVertical();
+            ControlarSaltosDePared();
 
+            ControlarMovimientoVertical();
+        }
+        //En caso de que si esté siendo atacado
+        else
+        {
+            //Desactivamos todas sus animaciones, y activamos la de HIT
+            mAnimator.SetBool("IsDoubleJumping", false);
+            mAnimator.SetBool("IsJumping", false);
+            mAnimator.SetBool("IsRunning", false);
+            mAnimator.SetBool("IsFalling", false);
+            mAnimator.SetBool("IsAttacking", false);
+            mAnimator.SetBool("WallNear", false);
+            mAnimator.SetBool("IsBeingHit", true);
+
+            //Actualizamos la velocidad en base al retroceso
+            mRb.velocity = new Vector2(
+                ultimaDirección * -1f * BackSpeed,
+                mRb.velocity.y
+            );
+
+            //Controlamos el tiempo de retroceso para no atascarnos
+            ControlarTiempoDeRetroceso();
+        }
     }
 
     //---------------------------------------------------------------------

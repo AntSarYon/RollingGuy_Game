@@ -18,7 +18,7 @@ public class HealthBarUI : MonoBehaviour
         mSlider = GetComponent<Slider>();
         
         //Añadimos al TPBarUI como Observador del Evento OnEnemyDamage
-        GameManager.Instance.OnEnemyDamage += OnPlayerDamageDelegate;
+        GameManager.Instance.OnPlayerDamage += OnPlayerDamageDelegate;
         
     }
 
