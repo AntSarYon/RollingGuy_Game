@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -60,12 +61,36 @@ public class PlayerMovement : MonoBehaviour
         mCollider = GetComponent<CapsuleCollider2D>();
         mAudioSource = GetComponent<AudioSource>();
 
+        //Obtenemos referencia al GameManager
         gameManager = GameManager.Instance;
 
         //Inicializamos
         canDoubleJump = false;
         isAttacking = false;
         enPared = false;
+    }
+
+    //--------------------------------------------------------------
+
+    private void Start()
+    {
+        //Añadimos como observador de los Eventos a este Script.
+        GameManager.Instance.OnPlayerDamage += OnPlayerDamageDelegate;
+        GameManager.Instance.OnEnemyDamage += OnEnemyDamageDelegate;
+    }
+
+    //------------------------------------------------------------
+    // Comportamiento cuando un Enemigo sufra daño
+    private void OnEnemyDamageDelegate(object sender, EventArgs e)
+    {
+        print("EnemigoDañado");
+    }
+
+    //------------------------------------------------------------
+    // Comportamiento cuando YO sufra daño
+    private void OnPlayerDamageDelegate(object sender, EventArgs e)
+    {
+        print("Jugador Dañado");
     }
 
     //------------------------------------------------------------

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,22 +9,19 @@ public class GameManager : MonoBehaviour
 
     private Vector3 ultimoCheckpoint;
 
+    //Creamos un Manejador de Eventos para los Eventos de Daño.
+    public event EventHandler OnPlayerDamage;
+    public event EventHandler OnEnemyDamage;
+
     // Encapsulamiento - - - - - - - - - - - - - - -
     public Vector3 UltimoCheckpoint { get => ultimoCheckpoint; set => ultimoCheckpoint = value; }
+
 
     //------------------------------------------------------
 
     void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        Instance = this;
     }
 
     //------------------------------------------------------
@@ -34,11 +32,20 @@ public class GameManager : MonoBehaviour
         UltimoCheckpoint = GameObject.Find("Player").transform.position;
     }
 
-    //----------------------------------------------------------
-  
-    void Update()
+    //-------------------------------------------------------------
+
+    public void PlayerDamage()
     {
-        
+        //Si se ejecuta el Evento, este objeto disparará una observación, con argumentos vacios
+        OnPlayerDamage?.Invoke(this, EventArgs.Empty);
+    }
+
+    //-------------------------------------------------------------
+
+    public void EnemyDamage()
+    {
+        //Si se ejecuta el Evento, este objeto disparará la observación, con arhumentos vacios
+        OnEnemyDamage?.Invoke(this, EventArgs.Empty);
     }
 
     //-------------------------------------------------------------
@@ -53,4 +60,6 @@ public class GameManager : MonoBehaviour
             print("Checkpoint actualizado");
         }
     }
+
+
 }

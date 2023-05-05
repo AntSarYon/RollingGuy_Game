@@ -12,7 +12,10 @@ public class EnemyIA : MonoBehaviour
 
     //Distancia del Rayo
     [SerializeField]
-    private float rayDistance = 3f;
+    private float rayDistance = 4f;
+
+    [SerializeField]
+    private float distanciaDeteccion = 7.5f;
     
     //Referencias al RigidBody y al Collider
     private Rigidbody2D mRb;
@@ -30,16 +33,21 @@ public class EnemyIA : MonoBehaviour
     //---------------------------------------------------------------------------------
     private void Update()
     {
-        //Actualiza la velocidad
-        mRb.velocity = new Vector2(speed, mRb.velocity.y);
+        //Movemos al Enemigo
+        Mover();
 
-        //Si detecta que hay una caida en esa dirección...
-        if (VerificarCaida())
+        //Detección del jugador
+        DetectarJugador();
+
+        //Controlamos el Giro en Corniza
+        ControlarGirosEnCorniza();
+
+        //Si estoy tocando a un Jugador
+        if (mCollider.IsTouchingLayers(LayerMask.GetMask("Player")))
         {
-            // Cambiar direccion
-            speed *= -1;
+            //Invoco al evento PlayerDamage
+            GameManager.Instance.PlayerDamage();
         }
-       
     }
     //------------------------------------------------------------------------------------
     private bool VerificarCaida()
@@ -60,16 +68,79 @@ public class EnemyIA : MonoBehaviour
     }
 
     //---------------------------------------------------------------------
-
+    /*
     private void OnDrawGizmos()
     {
+        //Dibujamos el Gizmo de la detección de precipicios
         mRb = GetComponent<Rigidbody2D>();
+
         Gizmos.DrawRay(
             transform.position,
             new Vector2(
                 mRb.velocity.x < 0f ? -1 : 1,
                 -1f
-            ).normalized*rayDistance
+            ).normalized*4f
        );
+
+        //Dibujamos el Gizmo para la deteccion del Player
+       Gizmos.DrawRay(
+            new Vector2(
+                transform.position.x,
+                transform.position.y - 0.95f
+            ),
+            new Vector2(
+                mRb.velocity.x < 0f ? -1 : 1,
+                0
+            ).normalized * 7.5f
+       );
+
+    }*/
+
+    //------------------------------------------------------------------
+    private void Mover()
+    {
+        //Actualiza la velocidad
+        mRb.velocity = new Vector2(speed, mRb.velocity.y);
     }
+
+    //------------------------------------------------------------------
+    private void ControlarGirosEnCorniza()
+    {
+        //Si detecta que hay una caida en esa dirección...
+        if (!VerificarCaida())
+        {
+            // Cambiar direccion
+            speed *= -1;
+
+            //Volteate
+            transform.localScale = new Vector3(
+                Mathf.Sign(mRb.velocity.x) * transform.localScale.x,
+                transform.localScale.y,
+                transform.localScale.z
+            );
+        }
+    }
+
+    //------------------------------------------------------------------
+    private void DetectarJugador()
+    {
+        RaycastHit2D raycast = Physics2D.Raycast(
+            new Vector2(
+                transform.position.x,
+                transform.position.y - 0.95f
+            ),
+            new Vector2(
+                mRb.velocity.x < 0f ? -1 : 1,
+                0f
+                ),
+            distanciaDeteccion,
+            LayerMask.GetMask("Player")
+       );
+
+        if (raycast)
+        {
+            print("Te estoy viendo, desgraciado");
+        }
+    }
+
 }
