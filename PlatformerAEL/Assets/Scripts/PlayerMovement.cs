@@ -2,9 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class PlayerMovement : MonoBehaviour
 {
+    private GameManager gameManager;
+
     [Header("Velocidad de Movimiento")]
     [SerializeField]
     private float runSpeed;
@@ -27,14 +30,25 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     private AudioClip[] saltos = new AudioClip[2];
 
+    [Header("Sonido de Ataque")]
+    [SerializeField]
+    private AudioClip clipAtaque;
+
     [Header("Capa de las plataformas")]
     [SerializeField]
     private LayerMask capaTerreno;
 
     private bool enPared;
 
-    private bool canAttack;
+    private bool canDoubleJump;
+
     private bool isAttacking;
+    private float attackMoveMultiplier = 1f;
+    private float attackDamage;
+
+    private bool takeAttackTime = false;
+    private float actualAttackTime = 0.0f;
+    private float maxAttackTime = 1f;
 
     //-----------------------------------------------------------
 
@@ -46,8 +60,10 @@ public class PlayerMovement : MonoBehaviour
         mCollider = GetComponent<CapsuleCollider2D>();
         mAudioSource = GetComponent<AudioSource>();
 
+        gameManager = GameManager.Instance;
+
         //Inicializamos
-        canAttack = false;
+        canDoubleJump = false;
         isAttacking = false;
         enPared = false;
     }
@@ -55,9 +71,9 @@ public class PlayerMovement : MonoBehaviour
     //------------------------------------------------------------
     private void ActualizarVelocidadEnX()
     {
-        //Actualizamos la velocidad en base a los Inputs
+        //Actualizamos la velocidad en base a los Inputs de movimiento y ataque
         mRb.velocity = new Vector2(
-            mMoveInput.x * runSpeed,
+            mMoveInput.x * runSpeed * attackMoveMultiplier,
             mRb.velocity.y
         );
     }
@@ -105,7 +121,7 @@ public class PlayerMovement : MonoBehaviour
                 mAnimator.SetBool("IsFalling", false);
 
                 //Reseteamos el Flag de CanAttack
-                canAttack = false;
+                canDoubleJump = false;
             }
     }
 
@@ -139,10 +155,52 @@ public class PlayerMovement : MonoBehaviour
             
     }
 
+    private void ControlarAtaque()
+    {
+        //Si oprime Ctrl, y no se esta tomando el tiempo de ataque
+        if (Input.GetKeyDown(KeyCode.LeftControl) && takeAttackTime == false)
+        {
+            //  Modificamos el multiplicador de velocidad a 3
+            attackMoveMultiplier = 3f;
+            //Activamos la Animacion de "Atacando"
+            mAnimator.SetBool("IsAttacking", true);
+
+            //Activamos el Flag de Ataque
+            isAttacking = true;
+
+            //Iniciar el Flag para tomar tiempo de ataque
+            takeAttackTime = true;
+
+            mAudioSource.PlayOneShot(clipAtaque, 0.75f);
+
+        }
+        //Si nos enocntramos tomando tiempo de ataque
+        if (takeAttackTime)
+        {
+            //Le agregamos el DeltaTime el tiempo de actualAttackTime+=Time.deltaTime;
+            actualAttackTime += Time.deltaTime;
+
+            //Si el tiempo de ataque actual excede al segundo y medio...
+            if (actualAttackTime >= maxAttackTime)
+            {
+                //Reiniciamos todos los valores y Flag
+                attackMoveMultiplier = 1f;
+                mAnimator.SetBool("IsAttacking", false);
+                takeAttackTime = false;
+                isAttacking = false;
+
+                //Devolvemos el tiempo de ataque actual a 0
+                actualAttackTime = 0f;
+            }
+        }
+    }
+
     //------------------------------------------------------------
 
     private void Update()
     {
+        ControlarAtaque();
+
         ActualizarVelocidadEnX();
 
         ControlarMovimientoHorizontal();
@@ -172,7 +230,7 @@ public class PlayerMovement : MonoBehaviour
         if (value.isPressed)
         {
             // Si aun no ha saltado, 
-            if (canAttack == false)
+            if (canDoubleJump == false)
             {
                 //Si se encuentra sobre un suelo, o pegado a una pared
                 if (HaySueloProximo() || enPared == true)
@@ -189,12 +247,12 @@ public class PlayerMovement : MonoBehaviour
 
                     //Activamos el Flag para indicar que
                     //es posible Atacar
-                    canAttack = true;
+                    canDoubleJump = true;
                 }
             }
 
             //Si ya realiz� su primer salto, y puede ejecutar un segundo...
-            if (canAttack)
+            if (canDoubleJump)
             {;
                 //Si se encuentra a una distancia considerable del suelo, y no est� cerca de ninguna pared
                 if (HaySueloProximo()== false && enPared==false)
@@ -213,7 +271,7 @@ public class PlayerMovement : MonoBehaviour
                     isAttacking = true;
 
                     //Desactivamos el Flag para que ya no pueda efectuar otro ataque
-                    canAttack = false;
+                    canDoubleJump = false;
                 }
 
                 //Si est� cerca de una pared, sea cual sea su altura
@@ -233,7 +291,7 @@ public class PlayerMovement : MonoBehaviour
                     isAttacking = false;
 
                     //Dejamos el Flag activado para que pueda efectuar un ataque
-                    canAttack = true;
+                    canDoubleJump = true;
                 }
             }
         }
@@ -267,5 +325,25 @@ public class PlayerMovement : MonoBehaviour
         Vector3 posicionReferencia = new Vector3(transform.position.x, transform.position.y - 0.30f, transform.position.z);
         Gizmos.DrawRay(posicionReferencia, Vector2.left * 0.53f);
         Gizmos.DrawRay(posicionReferencia, Vector2.right * 0.53f);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        //Si chocamos con un objeto de la capa Checkpoint
+        if (mCollider.IsTouchingLayers(LayerMask.GetMask("Checkpoint")))
+        {
+            //Evalua nuestra posicion actual para ser considerado como nuevo Checkpoint
+            gameManager.EvaluarYActualizarCheckpoint(transform.position);
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        //Si chocamos con un objeto de la capa Water
+        if (mCollider.IsTouchingLayers(LayerMask.GetMask("Water")))
+        {
+            //Nos teletransortamos al nuevo punto de Checkpoint.
+            transform.position = gameManager.UltimoCheckpoint;
+        }
     }
 }
