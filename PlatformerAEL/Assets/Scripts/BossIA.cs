@@ -17,7 +17,7 @@ public class BossIA : MonoBehaviour
     [SerializeField]
     private float rayDistanceFromPlayer = 14f;
     [SerializeField]
-    private float rayDistanceToAttack = 3.5f;
+    private float rayDistanceToAttack = 4f;
     private Rigidbody2D mRb;
     private BoxCollider2D mCollider;
     private Animator mAnimator;
@@ -132,7 +132,7 @@ public class BossIA : MonoBehaviour
         //Raycast que solo detecte al jugador de lejos
         var hit1 = Physics2D.Raycast(
             new Vector2(
-                transform.position.x + (transform.localScale.x < 0f ? 3.7f:-3.7f),
+                transform.position.x + (transform.localScale.x < 0f ? 5f:-5f),
                 -0.4f
             ),
             new Vector2(
@@ -204,13 +204,19 @@ public class BossIA : MonoBehaviour
         // Cuando AtacarAlJugador es verdadero activamos el flag isAttacking
         if (indicador)
         {
-
+            isRunning = false;
             isAttacking2 = false;
             isAttacking1 = true;
             mAnimator.SetBool("IsAttacking2",false);
-            mAnimator.SetBool("IsAttacking1",true);
-            
-            
+            mAnimator.SetBool("IsRunning",false);
+            mAnimator.SetBool("IsAttacking1",true);            
+        }
+        else
+        {
+            isAttacking2 = false;
+            isAttacking1 = false;
+            mAnimator.SetBool("IsAttacking2",false);
+            mAnimator.SetBool("IsAttacking1",false);
         }
     }
 }
