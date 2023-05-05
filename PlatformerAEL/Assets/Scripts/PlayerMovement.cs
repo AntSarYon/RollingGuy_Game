@@ -2,9 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class PlayerMovement : MonoBehaviour
 {
+    private GameManager gameManager;
+
     [Header("Velocidad de Movimiento")]
     [SerializeField]
     private float runSpeed;
@@ -56,6 +59,8 @@ public class PlayerMovement : MonoBehaviour
         mAnimator = GetComponent<Animator>();
         mCollider = GetComponent<CapsuleCollider2D>();
         mAudioSource = GetComponent<AudioSource>();
+
+        gameManager = GameManager.Instance;
 
         //Inicializamos
         canDoubleJump = false;
@@ -320,5 +325,25 @@ public class PlayerMovement : MonoBehaviour
         Vector3 posicionReferencia = new Vector3(transform.position.x, transform.position.y - 0.30f, transform.position.z);
         Gizmos.DrawRay(posicionReferencia, Vector2.left * 0.53f);
         Gizmos.DrawRay(posicionReferencia, Vector2.right * 0.53f);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        //Si chocamos con un objeto de la capa Checkpoint
+        if (mCollider.IsTouchingLayers(LayerMask.GetMask("Checkpoint")))
+        {
+            //Evalua nuestra posicion actual para ser considerado como nuevo Checkpoint
+            gameManager.EvaluarYActualizarCheckpoint(transform.position);
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        //Si chocamos con un objeto de la capa Water
+        if (mCollider.IsTouchingLayers(LayerMask.GetMask("Water")))
+        {
+            //Nos teletransortamos al nuevo punto de Checkpoint.
+            transform.position = gameManager.UltimoCheckpoint;
+        }
     }
 }
