@@ -25,6 +25,11 @@ public class BossIA : MonoBehaviour
         {
             // Cambiar direccion
             speed *= -1;
+            transform.localScale = new Vector3(
+                Mathf.Sign(mRb.velocity.x),
+                transform.localScale.y,
+                transform.localScale.z
+            );
         }
        
     }
@@ -66,4 +71,18 @@ public class BossIA : MonoBehaviour
             );
             return true;
         }
-}}
+    }
+    private void VerificarEntorno()
+    {
+        //Raycast que solo detecte al jugador
+        var hit1 = Physics2D.Raycast(
+            transform.position,
+            new Vector2(
+                mRb.velocity.x < 0f ? -1 : 1,
+                0f
+            ).normalized,
+            rayDistance,
+            LayerMask.GetMask("Player")
+        );
+    }
+}
