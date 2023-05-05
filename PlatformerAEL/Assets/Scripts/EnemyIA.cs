@@ -33,6 +33,13 @@ public class EnemyIA : MonoBehaviour
     //---------------------------------------------------------------------------------
     private void Update()
     {
+        //Si estoy tocando a un Jugador
+        if (mCollider.IsTouchingLayers(LayerMask.GetMask("Player")))
+        {
+            //Invoco al evento PlayerDamage
+            GameManager.Instance.PlayerDamage();
+        }
+        
         //Movemos al Enemigo
         Mover();
 
@@ -42,12 +49,7 @@ public class EnemyIA : MonoBehaviour
         //Controlamos el Giro en Corniza
         ControlarGirosEnCorniza();
 
-        //Si estoy tocando a un Jugador
-        if (mCollider.IsTouchingLayers(LayerMask.GetMask("Player")))
-        {
-            //Invoco al evento PlayerDamage
-            GameManager.Instance.PlayerDamage();
-        }
+        
     }
     //------------------------------------------------------------------------------------
     private bool VerificarCaida()
