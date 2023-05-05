@@ -44,6 +44,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     private AudioClip clipImpacto;
 
+    [Header("Sonido de Ataque")]
+    [SerializeField]
+    private AudioClip clipTeletransport;
+
     [Header("Capa de las plataformas")]
     [SerializeField]
     private LayerMask capaTerreno;
@@ -51,6 +55,8 @@ public class PlayerMovement : MonoBehaviour
     private bool enPared;
 
     private bool canDoubleJump;
+
+    private bool isTeleporting;
 
     //Flag cuando está atacando
     private bool isAttacking;
@@ -72,11 +78,19 @@ public class PlayerMovement : MonoBehaviour
     private float actualHitTime;
     private float maxHitTime;
 
+    //Punto inicio de teletransporte
+    private Vector3 posInicioTP;
+    private Vector3 posActualTP;
+
     //contenedor de su ultima dirección
     private float ultimaDirección;
 
     public bool IsAttacking { get => isAttacking; set => isAttacking = value; }
     public float AttackDamage { get => attackDamage; set => attackDamage = value; }
+    public bool IsTeleporting { get => isTeleporting; set => isTeleporting = value; }
+    public Animator MAnimator { get => mAnimator; set => mAnimator = value; }
+    public Vector2 PosInicioTP { get => posInicioTP; set => posInicioTP = value; }
+    public Vector2 PosActualTP { get => posActualTP; set => posActualTP = value; }
 
     //-----------------------------------------------------------
 
@@ -96,6 +110,7 @@ public class PlayerMovement : MonoBehaviour
 
         isBeingDamage = false;
         isAttacking = false;
+        isTeleporting = false;
 
         attackMoveMultiplier = 1f;
         attackDamage = 100f;
@@ -301,42 +316,86 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        //Si el jugador NO esta siendo atacado
-        if (!isBeingDamage)
+        if (!isTeleporting)
         {
-            //Ejectamos sus funciones de movimiento con normalidad
+            //Si el jugador NO esta siendo atacado
+            if (!isBeingDamage)
+            {
+                //Ejectamos sus funciones de movimiento con normalidad
 
-            ControlarAtaque();
+                ControlarAtaque();
 
-            ActualizarVelocidadEnX();
+                ActualizarVelocidadEnX();
 
-            ControlarMovimientoHorizontal();
+                ControlarMovimientoHorizontal();
 
-            ControlarSaltosDePared();
+                ControlarSaltosDePared();
 
-            ControlarMovimientoVertical();
+                ControlarMovimientoVertical();
+            }
+            //En caso de que si esté siendo atacado
+            else
+            {
+                //Desactivamos todas sus animaciones, y activamos la de HIT
+                mAnimator.SetBool("IsDoubleJumping", false);
+                mAnimator.SetBool("IsJumping", false);
+                mAnimator.SetBool("IsRunning", false);
+                mAnimator.SetBool("IsFalling", false);
+                mAnimator.SetBool("IsAttacking", false);
+                mAnimator.SetBool("WallNear", false);
+                mAnimator.SetBool("IsBeingHit", true);
+
+                //Actualizamos la velocidad en base al retroceso
+                mRb.velocity = new Vector2(
+                    ultimaDirección * -1f * BackSpeed,
+                    mRb.velocity.y
+                );
+
+                //Controlamos el tiempo de retroceso para no atascarnos
+                ControlarTiempoDeRetroceso();
+            }
         }
-        //En caso de que si esté siendo atacado
+        //Si se esta teletransportando...
         else
         {
-            //Desactivamos todas sus animaciones, y activamos la de HIT
-            mAnimator.SetBool("IsDoubleJumping", false);
-            mAnimator.SetBool("IsJumping", false);
-            mAnimator.SetBool("IsRunning", false);
-            mAnimator.SetBool("IsFalling", false);
-            mAnimator.SetBool("IsAttacking", false);
-            mAnimator.SetBool("WallNear", false);
-            mAnimator.SetBool("IsBeingHit", true);
+            //Reproducimos el sonido de Teletransporte
+            mAudioSource.PlayOneShot(clipTeletransport, 0.40f);
 
-            //Actualizamos la velocidad en base al retroceso
-            mRb.velocity = new Vector2(
-                ultimaDirección * -1f * BackSpeed,
-                mRb.velocity.y
-            );
+            //Nos volvemos Kinematicos
+            mRb.isKinematic = true;
 
-            //Controlamos el tiempo de retroceso para no atascarnos
-            ControlarTiempoDeRetroceso();
+            //Desactivamos el collider
+            mCollider.enabled = false;
+
+            float inputX = Input.GetAxis("Horizontal");
+            float inputY = Input.GetAxis("Vertical");
+
+            MoveTP(inputX, inputY);
+
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                isTeleporting = false;
+                //Nos volvemos Kinematicos
+                mRb.isKinematic = false;
+
+                //Desactivamos el collider
+                mCollider.enabled = true;
+            }
+                
+
         }
+        
+    }
+
+    //----------------------------------------------------
+    private void MoveTP(float movX, float movY)
+    {
+        //Movimeinto de la dirección directamente mediante coordenadas.
+        transform.position = transform.position + new Vector3(
+            movX,
+            movY,
+            transform.position.z
+            ).normalized * runSpeed * Time.deltaTime;
     }
 
     //---------------------------------------------------------------------
@@ -344,8 +403,12 @@ public class PlayerMovement : MonoBehaviour
     //---------------------------------------------------------------------
     private void OnMove(InputValue value)
     {
-        //Almacenamos el Vector con la unidad de movimiento en X
-        mMoveInput = value.Get<Vector2>();
+        if (!isTeleporting)
+        {   
+            //Almacenamos el Vector con la unidad de movimiento en X
+            mMoveInput = value.Get<Vector2>();
+        }
+        
 
     }
 
@@ -354,72 +417,76 @@ public class PlayerMovement : MonoBehaviour
     //---------------------------------------------------------------------
     private void OnJump(InputValue value)
     {
-        //Si se ha oprimido el Bot�n
-        if (value.isPressed)
+        if (!isTeleporting)
         {
-            // Si aun no ha saltado, 
-            if (canDoubleJump == false)
+            //Si se ha oprimido el Bot�n
+            if (value.isPressed)
             {
-                //Si se encuentra sobre un suelo, o pegado a una pared
-                if (HaySueloProximo() || enPared == true)
+                // Si aun no ha saltado, 
+                if (canDoubleJump == false)
                 {
-                    // Saltamos (agregamos velocidad en Y)
-                    mRb.velocity = new Vector2(
-                        mRb.velocity.x,
-                        jumpSpeed
-                    );
+                    //Si se encuentra sobre un suelo, o pegado a una pared
+                    if (HaySueloProximo() || enPared == true)
+                    {
+                        // Saltamos (agregamos velocidad en Y)
+                        mRb.velocity = new Vector2(
+                            mRb.velocity.x,
+                            jumpSpeed
+                        );
 
-                    //Activamos el FlagDeAnimacion de Jumping
-                    mAnimator.SetBool("IsJumping", true);
-                    mAudioSource.PlayOneShot(saltos[0], 0.75f);
+                        //Activamos el FlagDeAnimacion de Jumping
+                        mAnimator.SetBool("IsJumping", true);
+                        mAudioSource.PlayOneShot(saltos[0], 0.75f);
 
-                    //Activamos el Flag para indicar que
-                    //es posible Atacar
-                    canDoubleJump = true;
-                }
-            }
-
-            //Si ya realiz� su primer salto, y puede ejecutar un segundo...
-            if (canDoubleJump)
-            {;
-                //Si se encuentra a una distancia considerable del suelo, y no est� cerca de ninguna pared
-                if (HaySueloProximo()== false && enPared==false)
-                {
-                    //Le daremos otro salto
-                    mRb.velocity = new Vector2(
-                        mRb.velocity.x,
-                        secondJumpSpeed
-                    );
-
-                    //Activamos el FlagDeAnimacion de DobleJumping
-                    mAnimator.SetBool("IsDoubleJumping", true);
-                    mAudioSource.PlayOneShot(saltos[1], 0.75f);
-
-                    //Activamos el Flag para indicar que esta atacando
-                    isAttacking = true;
-
-                    //Desactivamos el Flag para que ya no pueda efectuar otro ataque
-                    canDoubleJump = false;
+                        //Activamos el Flag para indicar que
+                        //es posible Atacar
+                        canDoubleJump = true;
+                    }
                 }
 
-                //Si est� cerca de una pared, sea cual sea su altura
-                else if ((HaySueloProximo() == false && enPared == true) || (HaySueloProximo() && enPared))
+                //Si ya realiz� su primer salto, y puede ejecutar un segundo...
+                if (canDoubleJump)
                 {
-                    //Le permitimos hacer un salto normal
-                    mRb.velocity = new Vector2(
-                        mRb.velocity.x,
-                        jumpSpeed
-                    );
+                    ;
+                    //Si se encuentra a una distancia considerable del suelo, y no est� cerca de ninguna pared
+                    if (HaySueloProximo() == false && enPared == false)
+                    {
+                        //Le daremos otro salto
+                        mRb.velocity = new Vector2(
+                            mRb.velocity.x,
+                            secondJumpSpeed
+                        );
 
-                    //Activamos el FlagDeAnimacion de Jumping
-                    mAnimator.SetBool("IsJumping", true);
-                    mAudioSource.PlayOneShot(saltos[0], 0.75f);
+                        //Activamos el FlagDeAnimacion de DobleJumping
+                        mAnimator.SetBool("IsDoubleJumping", true);
+                        mAudioSource.PlayOneShot(saltos[1], 0.75f);
 
-                    //Desctivamos el Flag para indicar que No esta atacando
-                    isAttacking = false;
+                        //Activamos el Flag para indicar que esta atacando
+                        isAttacking = true;
 
-                    //Dejamos el Flag activado para que pueda efectuar un ataque
-                    canDoubleJump = true;
+                        //Desactivamos el Flag para que ya no pueda efectuar otro ataque
+                        canDoubleJump = false;
+                    }
+
+                    //Si est� cerca de una pared, sea cual sea su altura
+                    else if ((HaySueloProximo() == false && enPared == true) || (HaySueloProximo() && enPared))
+                    {
+                        //Le permitimos hacer un salto normal
+                        mRb.velocity = new Vector2(
+                            mRb.velocity.x,
+                            jumpSpeed
+                        );
+
+                        //Activamos el FlagDeAnimacion de Jumping
+                        mAnimator.SetBool("IsJumping", true);
+                        mAudioSource.PlayOneShot(saltos[0], 0.75f);
+
+                        //Desctivamos el Flag para indicar que No esta atacando
+                        isAttacking = false;
+
+                        //Dejamos el Flag activado para que pueda efectuar un ataque
+                        canDoubleJump = true;
+                    }
                 }
             }
         }
@@ -457,11 +524,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        //Si chocamos con un objeto de la capa Checkpoint
-        if (mCollider.IsTouchingLayers(LayerMask.GetMask("Checkpoint")))
+        if (!isTeleporting)
         {
-            //Evalua nuestra posicion actual para ser considerado como nuevo Checkpoint
-            gameManager.EvaluarYActualizarCheckpoint(transform.position);
+            //Si chocamos con un objeto de la capa Checkpoint
+            if (mCollider.IsTouchingLayers(LayerMask.GetMask("Checkpoint")))
+            {
+                //Evalua nuestra posicion actual para ser considerado como nuevo Checkpoint
+                gameManager.EvaluarYActualizarCheckpoint(transform.position);
+            }
         }
     }
 

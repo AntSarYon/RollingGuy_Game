@@ -84,13 +84,6 @@ public class EnemyIA : MonoBehaviour
             }
         }
 
-            //Si estoy tocando a un Jugador
-            //if (mCollider.IsTouchingLayers(LayerMask.GetMask("Player")))
-        //{
-            //Invoco al evento PlayerDamage
-            //GameManager.Instance.PlayerDamage();
-        //}
-        
     }
     //------------------------------------------------------------------------------------
     private bool VerificarCaida()
@@ -111,33 +104,7 @@ public class EnemyIA : MonoBehaviour
     }
 
     //---------------------------------------------------------------------
-    /*
-    private void OnDrawGizmos()
-    {
-        //Dibujamos el Gizmo de la detección de precipicios
-        mRb = GetComponent<Rigidbody2D>();
 
-        Gizmos.DrawRay(
-            transform.position,
-            new Vector2(
-                mRb.velocity.x < 0f ? -1 : 1,
-                -1f
-            ).normalized*4f
-       );
-
-        //Dibujamos el Gizmo para la deteccion del Player
-       Gizmos.DrawRay(
-            new Vector2(
-                transform.position.x,
-                transform.position.y - 0.95f
-            ),
-            new Vector2(
-                mRb.velocity.x < 0f ? -1 : 1,
-                0
-            ).normalized * 7.5f
-       );
-
-    }*/
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
