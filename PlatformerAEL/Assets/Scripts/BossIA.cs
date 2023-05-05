@@ -8,7 +8,7 @@ public class BossIA : MonoBehaviour
     [SerializeField]
     private float speed = 1f;
     [SerializeField]
-    private float rayDistance = 5f;
+    private float rayDistance = 3f;
     private Rigidbody2D mRb;
     private BoxCollider2D mCollider;
 
@@ -21,7 +21,7 @@ public class BossIA : MonoBehaviour
     private void Update()
     {
         mRb.velocity = new Vector2(speed, mRb.velocity.y);
-        if (VerificarCaida())
+        if (!VerificarCaida())
         {
             // Cambiar direccion
             speed *= -1;
@@ -36,7 +36,7 @@ public class BossIA : MonoBehaviour
             transform.position,
             new Vector2(
                 mRb.velocity.x < 0f ? -1 : 1,
-                -1f
+                0f
             ).normalized,
             rayDistance,
             LayerMask.GetMask("Ground")
@@ -48,7 +48,7 @@ public class BossIA : MonoBehaviour
                 transform.position,
                 new Vector2(
                     mRb.velocity.x < 0f ? -1 : 1,
-                    -1f
+                    0f
                 ).normalized * rayDistance,
                 Color.red
             );
@@ -60,7 +60,7 @@ public class BossIA : MonoBehaviour
                 transform.position,
                 new Vector2(
                     mRb.velocity.x < 0f ? -1 : 1,
-                    -1f
+                    0f
                 ).normalized * rayDistance,
                 Color.green
             );
