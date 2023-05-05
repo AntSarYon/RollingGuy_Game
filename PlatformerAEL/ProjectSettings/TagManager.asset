@@ -52,6 +52,9 @@ TagManager:
   - name: Water
     uniqueID: 3383486495
     locked: 0
+  - name: Props
+    uniqueID: 425464171
+    locked: 0
   - name: Platforms
     uniqueID: 740856315
     locked: 0
@@ -60,9 +63,6 @@ TagManager:
     locked: 0
   - name: Obstacles
     uniqueID: 2837981303
-    locked: 0
-  - name: Props
-    uniqueID: 425464171
     locked: 0
   - name: Player
     uniqueID: 2635074297
