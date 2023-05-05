@@ -427,7 +427,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.7236404, y: 2.4117467, z: -10}
+  m_LocalPosition: {x: -11.901355, y: 2.3458984, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17880,7 +17880,7 @@ GameObject:
   - component: {fileID: 1003373750}
   m_Layer: 10
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -18058,6 +18058,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 028377813207e08458a1c37422fb77b3, type: 3}
   - {fileID: 8300000, guid: f7d8982940aef8744b92ab368fcef3e1, type: 3}
   clipAtaque: {fileID: 8300000, guid: 846b35dcd1531854388dbe0a72f13468, type: 3}
+  clipImpacto: {fileID: 8300000, guid: c7db9993598479c4994e92b8d37e911f, type: 3}
   capaTerreno:
     serializedVersion: 2
     m_Bits: 64

@@ -29,6 +29,6 @@ public class HealthBarUI : MonoBehaviour
     {
         print("aqui llego");
         //Reduzco el Valor del Slider de Vida en 5.
-        mSlider.value -= 1f;
+        mSlider.value -= 0.25f;
     }
 }

@@ -40,6 +40,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     private AudioClip clipAtaque;
 
+    [Header("Sonido de Ataque")]
+    [SerializeField]
+    private AudioClip clipImpacto;
+
     [Header("Capa de las plataformas")]
     [SerializeField]
     private LayerMask capaTerreno;
@@ -70,6 +74,9 @@ public class PlayerMovement : MonoBehaviour
 
     //contenedor de su ultima dirección
     private float ultimaDirección;
+
+    public bool IsAttacking { get => isAttacking; set => isAttacking = value; }
+    public float AttackDamage { get => attackDamage; set => attackDamage = value; }
 
     //-----------------------------------------------------------
 
@@ -124,6 +131,12 @@ public class PlayerMovement : MonoBehaviour
     // Comportamiento cuando YO sufra daño
     private void OnPlayerDamageDelegate(object sender, EventArgs e)
     {
+        //Controlamos que el sonido solo de dispare 1 vez
+        if (isBeingDamage == false)
+        {
+            mAudioSource.PlayOneShot(clipImpacto, 0.60f); 
+        }
+
         //Obtenemos la ultima direccion a la cual nos dirigiamos antes de impactar
         ultimaDirección = MathF.Sign(mRb.velocity.x);
 

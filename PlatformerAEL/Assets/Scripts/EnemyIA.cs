@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,10 @@ public class EnemyIA : MonoBehaviour
     [SerializeField]
     private float speed = 1f;
 
+    private float vida = 10f;
+
+    private float dañoRecibido;
+
     //Distancia del Rayo
     [SerializeField]
     private float rayDistance = 4f;
@@ -21,6 +26,8 @@ public class EnemyIA : MonoBehaviour
     private Rigidbody2D mRb;
     private BoxCollider2D mCollider;
 
+    private bool atacado = false;
+
     //------------------------------------------------------------------------------
 
     private void Start()
@@ -28,27 +35,61 @@ public class EnemyIA : MonoBehaviour
         //Obtención de componentes referencia
         mRb = GetComponent<Rigidbody2D>();
         mCollider = GetComponent<BoxCollider2D>();
+
+        GameManager.Instance.OnEnemyDamage += OnEnemyDamageDelegate;
+
+    }
+
+    //------------------------------------------------------------
+    // Comportamiento cuando un Enemigo (Yo) sufra daño
+    private void OnEnemyDamageDelegate(object sender, EventArgs e)
+    {
+        //Activo el Flag de Atacado
+        atacado = true;
+
+        //Reduzco el daño recibido de su vida
+        vida -= dañoRecibido;
+        print("Mi vida ahora es" + vida);
     }
 
     //---------------------------------------------------------------------------------
     private void Update()
     {
-        //Si estoy tocando a un Jugador
-        if (mCollider.IsTouchingLayers(LayerMask.GetMask("Player")))
+        //Si no ha sido atacado...
+        if (atacado == false)
         {
-            //Invoco al evento PlayerDamage
-            GameManager.Instance.PlayerDamage();
+            //Movemos al Enemigo
+            Mover();
+
+            //Detección del jugador
+            DetectarJugador();
+
+            //Controlamos el Giro en Corniza
+            ControlarGirosEnCorniza();
         }
-        
-        //Movemos al Enemigo
-        Mover();
+        //si lo han atacado
+        else
+        {
+            //Si su vida después del ataque es 0; entonces Muere.
+            if (vida <= 0)
+            {
+                print("Me morí");
+                mCollider.isTrigger = true;
+                gameObject.SetActive(false);
+            }
+            //Si aun sigue con vida...
+            else
+            {
 
-        //Detección del jugador
-        DetectarJugador();
+            }
+        }
 
-        //Controlamos el Giro en Corniza
-        ControlarGirosEnCorniza();
-
+            //Si estoy tocando a un Jugador
+            //if (mCollider.IsTouchingLayers(LayerMask.GetMask("Player")))
+        //{
+            //Invoco al evento PlayerDamage
+            //GameManager.Instance.PlayerDamage();
+        //}
         
     }
     //------------------------------------------------------------------------------------
@@ -97,6 +138,31 @@ public class EnemyIA : MonoBehaviour
        );
 
     }*/
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        //Si he colisionado con el Jugador...
+        if (collision.transform.CompareTag("Player"))
+        {
+            // Si el jugador me estaba atacando...
+            if (collision.transform.GetComponent<PlayerMovement>().IsAttacking == true)
+            {
+                print("Me estas atacando");
+
+                //Almaceno su daño de ataque
+                dañoRecibido = collision.transform.GetComponent<PlayerMovement>().AttackDamage;
+                print("tu daño es" + dañoRecibido);
+
+                //Llamo al Evento EnemyDamage
+                GameManager.Instance.EnemyDamage();
+            }
+            //Si no me esta atacando; llamo al Evento de hacer Daño
+            else
+            {
+                GameManager.Instance.PlayerDamage();
+            }
+        }
+    }
 
     //------------------------------------------------------------------
     private void Mover()
