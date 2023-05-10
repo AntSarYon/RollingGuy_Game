@@ -1,69 +1,112 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class TeleportController : MonoBehaviour
 {
+    //Referencia al GameManager
+    private GameManager gameManager;
+
     //Referencia al Script de PlayerMovement
-    private PlayerMovement personaje;
+    private PlayerMovement player;
 
-    //Definimos la distancia máxima permitida entre los puntos de teletransporte.
-    private float distanciaMaxima = 8f;
+    [Header("Sonido de Teletransporte")]
+    [SerializeField]
+    private AudioClip clipIniciaTP;
 
-    //Referencia al Slider de Ataque
-    [SerializeField] private Slider hcSlider;
+    [Header("Sonido de Fin de Teletransporte")]
+    [SerializeField]
+    private AudioClip clipFinTP;
+
+    //Distancia de Teletransporte máxima permitida.
+    private float distanciaTPMaxima;
+
+    //Referencia a la Barra de Ataque
+    private Slider barraAtaque;
+    private float valorMaximoDeBarra;
+    private float numAtaquesNecesarios;
+
+    //Posiciones para medir la distancia Teletransporte
+    private Vector3 posInicioTP;
+    private Vector3 posActualTP;
+    private float distanciaRecorrida;
+
+    // GETTERS Y SETTERS
+    public Vector2 PosInicioTP { get => posInicioTP; set => posInicioTP = value; }
+    public Vector2 PosActualTP { get => posActualTP; set => posActualTP = value; }
 
     //------------------------------------------------------
 
     private void Awake()
     {
-        personaje = GetComponent<PlayerMovement>();
+        player = GetComponent<PlayerMovement>();
+        gameManager = GameManager.Instance;
+        
+        //Buscamos el objeto de UI que contiene el Slider de nuestro interés
+        barraAtaque = GameObject.Find("TPBar").GetComponent<Slider>();
     }
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        
+        //Obtenemos el máximo valor que puede recibir la barra de vida
+        //Este siempre debe ser un valor de 10
+        valorMaximoDeBarra = barraAtaque.maxValue;
+
+        //Cada ataque agregará 10 unidades a la barra de ataque
+        numAtaquesNecesarios = valorMaximoDeBarra / 5;
+
+        //La distancia maxima para el teletransporte es el valor maximo de la barra
+        distanciaTPMaxima = valorMaximoDeBarra;
     }
 
     //---------------------------------------------------
 
-    // Update is called once per frame
     void Update()
     {
-        //Si el valor del Slide llega a 3, y se oprime la tecla T
-        if (hcSlider.value == 3 )
+        //Si el personaje No se está teletransportando
+        if (player.IsTeleporting == false)
         {
-            if (Input.GetKeyDown(KeyCode.T) && personaje.IsTeleporting == false)
+            //Si se oprime la tecla T
+            if (Input.GetKeyDown(KeyCode.T))
             {
-            //Activamos el Flag de Teletransporte
-            personaje.IsTeleporting = true;
+                //Si la Barra de Ataque está en su máximo
+                if (barraAtaque.value == valorMaximoDeBarra)
+                {
+                    player.MAudioSource.PlayOneShot(clipIniciaTP, 0.65f);
+                    //Activamos el Flag de Teletransporte del Personaje
+                    player.IsTeleporting = true;
 
-            //Almacenamos la posicionInicial del Personaje
-            personaje.PosInicioTP = transform.position;
-
-            //Activamos la Animación de Teletransporte
-            //Desactivamos todas sus animaciones, y activamos la de HIT
-            personaje.MAnimator.SetBool("IsDoubleJumping", false);
-            personaje.MAnimator.SetBool("IsJumping", false);
-            personaje.MAnimator.SetBool("IsRunning", false);
-            personaje.MAnimator.SetBool("IsFalling", false);
-            personaje.MAnimator.SetBool("IsAttacking", false);
-            personaje.MAnimator.SetBool("WallNear", false);
-            personaje.MAnimator.SetBool("IsBeingHit", false);
-            personaje.MAnimator.SetBool("IsTeleporting", true);
-            
-                hcSlider.value = 0;
+                    //Almacenamos la posicionInicial del Personaje
+                    PosInicioTP = transform.position;
+                }
             }
         }
-        else if (hcSlider.value ==0)
-        {
-            if(Input.GetKeyDown(KeyCode.T))
 
-            //Sino, lo desactivamos
-            personaje.IsTeleporting = false;
+        //Si el personaje si se está teletransportando...
+        else
+        {
+            //Actualizamos la referencia a la posición Actual
+            posActualTP = transform.position;
+
+            //Calculamos la distancia entre la Pos Actual y la Pos de inicio de TP
+            distanciaRecorrida = (PosInicioTP - PosActualTP).magnitude;
+
+            //la barra de ataque se ira reduciendo mientras mas cerca este
+            // el jugador de la ditancia máxima permitida
+            barraAtaque.value = distanciaTPMaxima - distanciaRecorrida;
+
+            //Si la distancia supera el maximo permitido
+            if (barraAtaque.value == 0)
+            {
+                //Desactivamos la animacion Teletransporte
+                player.MAnimator.SetBool("IsTeleporting", false);
+
+                //Desactivamos el Flag de Teletransporte
+                player.IsTeleporting = false;
+            }
         }
     }
 }

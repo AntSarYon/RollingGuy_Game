@@ -9,6 +9,7 @@ TagManager:
   - Props
   - Obstacle
   - Checkpoint
+  - Enemy
   layers:
   - Default
   - TransparentFX

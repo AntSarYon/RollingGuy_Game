@@ -28,6 +28,6 @@ public class TPBarUI : MonoBehaviour
     private void OnEnemyDamageDelegate(object sender, EventArgs e)
     {
         //Incremento el Valor del Slider en 1
-        mSlider.value += 1.00f;
+        mSlider.value += 5.00f;
     }
 }

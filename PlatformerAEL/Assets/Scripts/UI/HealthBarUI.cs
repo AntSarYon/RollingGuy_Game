@@ -27,8 +27,8 @@ public class HealthBarUI : MonoBehaviour
     //Esto permitirá que todos los enemigos afectados por el Evento puedan llamar a esta ejecución
     private void OnPlayerDamageDelegate(object sender, EventArgs e)
     {
-        print("aqui llego");
-        //Reduzco el Valor del Slider de Vida en 5.
-        mSlider.value -= 0.25f;
+        //Reduzco el Valor del Slider de Vida segun el daño del enemigo
+        mSlider.value -= GameManager.Instance.DamageReceivedInProgress;
+        print("Recibí 15 de Daño");
     }
 }
