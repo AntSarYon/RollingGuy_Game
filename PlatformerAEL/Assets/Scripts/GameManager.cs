@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     // GETTER Y SETTER
     public Vector3 UltimoCheckpoint { get => ultimoCheckpoint; set => ultimoCheckpoint = value; }
     public float DamageReceivedInProgress { get => damageReceivedInProgress; set => damageReceivedInProgress = value; }
+    public Transform Player { get => player; set => player = value; }
 
     //------------------------------------------------------
 
@@ -47,12 +48,12 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         //Obtenemos Referencia al Player
-        player = GameObject.Find("Player").transform;
+        Player = GameObject.Find("Player").transform;
         coorRightLimit = GameObject.Find("MapLimits").transform.Find("RightLimitCoor").transform.position;
         coorLeftLimit = GameObject.Find("MapLimits").transform.Find("LeftLimitCoor").transform.position;
 
         //Seteamos el primer Checkpoint como la posición de inicio del jugador.
-        UltimoCheckpoint = player.position;
+        UltimoCheckpoint = Player.position;
     }
 
     //-------------------------------------------------------------
@@ -98,10 +99,10 @@ public class GameManager : MonoBehaviour
         print($"eL LIMTE IZQUIERDO ES DE:{coorLeftLimit.x}, mientras que el LIMITE DERECHO ES DE: {coorRightLimit.x}");
 
         //Aplicar un Mathf.Clamp en el Eje X
-        player.position = new Vector3(
-            Mathf.Clamp(player.position.x, coorLeftLimit.x, coorRightLimit.x),
-            player.position.y,
-            player.position.z
+        Player.position = new Vector3(
+            Mathf.Clamp(Player.position.x, coorLeftLimit.x, coorRightLimit.x),
+            Player.position.y,
+            Player.position.z
             );
 
         //Utilizar las coordenadas (en X) de los limites como valores 

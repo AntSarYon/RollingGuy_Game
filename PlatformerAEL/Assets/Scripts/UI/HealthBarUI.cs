@@ -29,6 +29,13 @@ public class HealthBarUI : MonoBehaviour
     {
         //Reduzco el Valor del Slider de Vida segun el daño del enemigo
         mSlider.value -= GameManager.Instance.DamageReceivedInProgress;
-        print("Recibí 15 de Daño");
+        if (mSlider.value <= 0)
+        {
+            //Nos teletransortamos al nuevo punto de Checkpoint.
+            GameManager.Instance.Player.position = GameManager.Instance.UltimoCheckpoint;
+
+            //Devolvemos el Slider al Valor máximo
+            mSlider.value = mSlider.maxValue;
+        }
     }
 }

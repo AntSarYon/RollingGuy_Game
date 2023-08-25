@@ -612,7 +612,7 @@ public class PlayerMovement : MonoBehaviour
         //Si chocamos con un objeto de la capa Water
         if (mCollider.IsTouchingLayers(LayerMask.GetMask("Water")))
         {
-            //Nos teletransortamos al nuevo punto de Checkpoint.
+            //Nos teletransortamos al ultimo punto de Checkpoint.
             transform.position = gameManager.UltimoCheckpoint;
         }
         //Si chocamos con un objeto de la capa Enemigo
