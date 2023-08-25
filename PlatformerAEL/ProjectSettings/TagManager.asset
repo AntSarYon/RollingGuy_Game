@@ -10,6 +10,7 @@ TagManager:
   - Obstacle
   - Checkpoint
   - Enemy
+  - MapLimit
   layers:
   - Default
   - TransparentFX
