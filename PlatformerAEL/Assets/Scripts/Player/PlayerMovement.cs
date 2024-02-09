@@ -135,16 +135,25 @@ public class PlayerMovement : MonoBehaviour
 
     //--------------------------------------------------------------
 
-    private void Start()
+    void Start()
     {
         //Añadimos como observador de los Eventos a este Script.
         gameManager.OnPlayerDamage += OnPlayerDamageDelegate;
         gameManager.OnEnemyDamage += OnEnemyDamageDelegate;
+        gameManager.OnPlayerBeingResurrected += OnlayerDeathDelegate;
+    }
+
+    //--------------------------------------------------------------
+
+    private void OnlayerDeathDelegate()
+    {
+        //Teletransortamos al JUGADOR a las coordenadas del ultimo CheckPoint.
+        transform.position = GameManager.Instance.UltimoCheckpoint;
     }
 
     //------------------------------------------------------------
     // Comportamiento cuando un Enemigo sufra daño
-    private void OnEnemyDamageDelegate(object sender, EventArgs e)
+    private void OnEnemyDamageDelegate()
     {
         //Obtenemos la dirección en que nos dirigiamos al golpear al enemigo
         ultimaDirección = MathF.Sign(mRb.velocity.x);
@@ -152,7 +161,7 @@ public class PlayerMovement : MonoBehaviour
 
     //------------------------------------------------------------
     // Comportamiento cuando YO sufra daño
-    private void OnPlayerDamageDelegate(object sender, EventArgs e)
+    private void OnPlayerDamageDelegate()
     {
         //Controlamos que el sonido solo de dispare 1 vez
         if (!isBeingDamage)

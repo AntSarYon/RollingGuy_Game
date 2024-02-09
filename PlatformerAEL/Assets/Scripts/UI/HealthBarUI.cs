@@ -11,31 +11,90 @@ public class HealthBarUI : MonoBehaviour
     //Referencia al Slider
     private Slider mSlider;
 
+    //Valor inicial del Slider (antes de moverse)
+    private float sliderInitialValue;
+    private float sliderFinalValue;
+
+    private float interpolation;
+
+    //--------------------------------------------------------
+
+    void Awake()
+    {
+        //Obtenemos referencia al Slider
+        mSlider = GetComponent<Slider>();
+
+        //Los valores iniciales y finales del Slider empiezan en 100 (el maximo)
+        sliderInitialValue = 100;
+        sliderFinalValue = 100;
+
+        //El factor de interpolacion inicia en 0
+        interpolation = 0;
+    }
+
     //--------------------------------------------------------
 
     void Start()
     {
-        mSlider = GetComponent<Slider>();
-        
-        //Añadimos al TPBarUI como Observador del Evento OnEnemyDamage
-        GameManager.Instance.OnPlayerDamage += OnPlayerDamageDelegate;
-        
+        //Añadimos al HealthBar como Observador de Eventos
+        GameManager.Instance.OnPlayerDamage += OnPlayerDamageDelegate; 
+        GameManager.Instance.OnPlayerDamage += OnPlayerBeingResurrected;
+
+        //Actualizamos el valor inicial del Slider
+        sliderInitialValue = mSlider.value;
     }
 
-    //-------------------------------------------------------------------------------------------
+    
 
-    //Esto permitirá que todos los enemigos afectados por el Evento puedan llamar a esta ejecución
-    private void OnPlayerDamageDelegate(object sender, EventArgs e)
+    void Update()
     {
-        //Reduzco el Valor del Slider de Vida segun el daño del enemigo
-        mSlider.value -= GameManager.Instance.DamageReceivedInProgress;
-        if (mSlider.value <= 0)
-        {
-            //Nos teletransortamos al nuevo punto de Checkpoint.
-            GameManager.Instance.Player.position = GameManager.Instance.UltimoCheckpoint;
+        //Interpolamos el valor de la Barra constantemente
+        mSlider.value = Mathf.Lerp(sliderInitialValue, sliderFinalValue, interpolation);
 
-            //Devolvemos el Slider al Valor máximo
-            mSlider.value = mSlider.maxValue;
+        //Incrementamos el factor de Interpolacion cada frame
+        interpolation += 0.8f * Time.deltaTime;
+
+        //Comprobamos si la interpolacion ha llegado a 1
+        if (interpolation >= 1.0f)
+        {
+            //Hacemos que el inicial sea igual al final
+            sliderInitialValue = sliderFinalValue;
+
+            //Devolvemos el factor de Interpolacion a 0
+            interpolation = 0.0f;
         }
+    }
+
+    //--------------------------------------------------------------------
+
+    private void OnPlayerDamageDelegate()
+    {
+        //Asiganmos un nuevo Valor Final para la Barra de vida
+        sliderFinalValue = mSlider.value - GameManager.Instance.DamageReceivedInProgress;
+
+        //Limitamos su valor maximo y final para que no exceda los limites del Slide
+        Mathf.Clamp(sliderFinalValue, 0.0f, 100f);
+
+        //Si el valor Final del Slider será de 0
+        if (sliderFinalValue <= 0)
+        {
+            //Tras 1 segundo, invocamos al Evento de JugadorMuerto
+            Invoke(nameof(GameManager.Instance.PlayerDeath), 1f);
+        }
+    }
+
+    //------------------------------------------------------------------------
+
+    private void OnPlayerBeingResurrected()
+    {
+        //Reseteamos los valores de la Barra de Vida
+        sliderInitialValue = 100;
+        sliderFinalValue = 100;
+
+        //El factor de interpolacion inicia en 0
+        interpolation = 1;
+
+        //Devolvemos el Slider al Valor máximo
+        mSlider.value = mSlider.maxValue;
     }
 }

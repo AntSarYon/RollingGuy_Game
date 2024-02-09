@@ -22,10 +22,8 @@ public class TPBarUI : MonoBehaviour
         
     }
 
-    //---------------------------------------------------------------------------------------------
-
     //Esto permitirá que todos los enemigos afectados por el Evento puedan llamar a esta ejecución
-    private void OnEnemyDamageDelegate(object sender, EventArgs e)
+    private void OnEnemyDamageDelegate()
     {
         //Incremento el Valor del Slider en 1
         mSlider.value += 5.00f;

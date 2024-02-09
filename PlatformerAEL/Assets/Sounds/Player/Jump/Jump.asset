@@ -15,7 +15,7 @@ MonoBehaviour:
   id: Jump
   clips:
   - {fileID: 8300000, guid: 028377813207e08458a1c37422fb77b3, type: 3}
-  volume: 1
+  volume: 0.5
   frequencyLevel: 2
   minPitch: 1
   maxPitch: 1

@@ -42,7 +42,7 @@ public class AudioManager : MonoBehaviour
     }
     private void Start()
     {
-        PlayMusic("MenuMusic");
+        //PlayMusic("MenuMusic");
     }
 
     public void PlaySfx(string name)
@@ -93,13 +93,9 @@ public class AudioManager : MonoBehaviour
 
     private void Update()
     {
-        if (SceneManager.GetActiveScene().name == "Menu")
+        if (SceneManager.GetActiveScene().name == "Level1")
         {
-            updateMusic("MenuMusic");
-        }
-        else if (SceneManager.GetActiveScene().name == "Level1")
-        {
-            updateMusic("BackgroundMusic");//
+            updateMusic("BackgroundMusic");
         }
     }
 }

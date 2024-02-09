@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,71 +13,96 @@ public class GameManager : MonoBehaviour
     private Vector3 ultimoCheckpoint;
 
     //Creamos un Manejador de Eventos para los Eventos de Daño.
-    public event EventHandler OnPlayerDamage;
-    public event EventHandler OnEnemyDamage;
+    public event UnityAction OnPlayerDamage;
+    public event UnityAction OnEnemyDamage;
+    public event UnityAction OnPlayerDeath;
+    public event UnityAction OnPlayerBeingResurrected;
 
+    //Referencia al Transform del Player
     private Transform player;
-    private Vector3 coorLeftLimit;
-    private Vector3 coorRightLimit;
+
+    //Vectorees de Coordenadas para conocer los limites del Mapa
+    private Vector3 coorLeftLimit; //(Limite izquierdo)
+    private Vector3 coorRightLimit; //(Limite Derecho)
 
     private float damageReceivedInProgress;
 
-    // GETTER Y SETTER
+    #region GETTERS Y SETTERS
     public Vector3 UltimoCheckpoint { get => ultimoCheckpoint; set => ultimoCheckpoint = value; }
     public float DamageReceivedInProgress { get => damageReceivedInProgress; set => damageReceivedInProgress = value; }
     public Transform Player { get => player; set => player = value; }
 
-    //------------------------------------------------------
+    #endregion
+    //---------------------------------------------------------------------------------------
 
     void Awake()
     {
-        //Controlamos la única isntancia del GameManager a lo largo del juego
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(this.gameObject);
-        }
-        else
-        {
-            DestroyObject(this.gameObject);
-        }
-
+        //Declaramos este Script como Instancia
+        Instance = this;
     }
 
-    //------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------------
 
     void Start()
     {
         //Obtenemos Referencia al Player
         Player = GameObject.Find("Player").transform;
-        coorRightLimit = GameObject.Find("MapLimits").transform.Find("RightLimitCoor").transform.position;
-        coorLeftLimit = GameObject.Find("MapLimits").transform.Find("LeftLimitCoor").transform.position;
+
+        //Obtenemos Coordenadas del Limite del Mapa
+        coorRightLimit = GameObject.Find("RightLimitCoor").transform.position;
+        coorLeftLimit = GameObject.Find("LeftLimitCoor").transform.position;
 
         //Seteamos el primer Checkpoint como la posición de inicio del jugador.
         UltimoCheckpoint = Player.position;
     }
 
-    //-------------------------------------------------------------
+    //-----------------------------------------------------------------------------------
 
-    private void Update()
+    #region DISPARO DE EVENTOS
+
+    public void PlayerDamage()
+    {
+        //**Llamamos a los delegados**
+        OnPlayerDamage?.Invoke();
+    }
+
+    public void EnemyDamage()
+    {
+        //**Llamamos a los delegados**
+        OnEnemyDamage?.Invoke();
+    }
+
+    public void PlayerDeath()
+    {
+        //**Llamamos a los delegados**
+        OnPlayerDeath?.Invoke();
+    }
+
+    public void PlayerBeingResurrected()
+    {
+        //**Llamamos a los delegados**
+        OnPlayerBeingResurrected?.Invoke();
+    }
+
+    #endregion
+
+//-------------------------------------------------------------
+
+private void Update()
     {
         LimitarMovimientoHorizontal();
     }
 
     //-------------------------------------------------------------
 
-    public void PlayerDamage()
+    public void LimitarMovimientoHorizontal()
     {
-        //Si se ejecuta el Evento, este objeto disparará una observación, con argumentos vacios
-        OnPlayerDamage?.Invoke(this, EventArgs.Empty);
-    }
-
-    //-------------------------------------------------------------
-
-    public void EnemyDamage()
-    {
-        //Si se ejecuta el Evento, este objeto disparará la observación, con arhumentos vacios
-        OnEnemyDamage?.Invoke(this, EventArgs.Empty);
+        //Aplicar un Mathf.Clamp en el Eje X del Jugador -> Lo condicionamos a permanecer dentro de los limites del Mapa
+        Player.position = new Vector3(
+            Mathf.Clamp(Player.position.x, coorLeftLimit.x, coorRightLimit.x),
+            Player.position.y,
+            Player.position.z
+            );
     }
 
     //-------------------------------------------------------------
@@ -91,20 +117,4 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    //-------------------------------------------------------------
-
-    public void LimitarMovimientoHorizontal()
-    {
-
-        print($"eL LIMTE IZQUIERDO ES DE:{coorLeftLimit.x}, mientras que el LIMITE DERECHO ES DE: {coorRightLimit.x}");
-
-        //Aplicar un Mathf.Clamp en el Eje X
-        Player.position = new Vector3(
-            Mathf.Clamp(Player.position.x, coorLeftLimit.x, coorRightLimit.x),
-            Player.position.y,
-            Player.position.z
-            );
-
-        //Utilizar las coordenadas (en X) de los limites como valores 
-    }
 }

@@ -5,10 +5,37 @@ using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour
 {
+    [SerializeField] private GameObject OptionsPanel;
+
+    //----------------------------------------------
+
+    void Start()
+    {
+        //Iniciamos desactivando el Panel de Opciones
+        OptionsPanel.SetActive(false);
+    }
+
+    //----------------------------------------------
+
+    public void OpenOptionsPanel()
+    {
+        //Activamos el Panel de Options
+        OptionsPanel.SetActive(true);
+    }
+
+    public void CloseOptionsPanel()
+    {
+        //Activamos el Panel de Options
+        OptionsPanel.SetActive(false);
+    }
+
+    //----------------------------------------------
+
     public void StartFadeIn()
     {
         GetComponent<Animator>().Play("FadeIn");
     }
+
 
     public void StartGame()
     {
@@ -16,6 +43,11 @@ public class MenuController : MonoBehaviour
     }
 
     //----------------------------------------------
+
+    public void PlayBackgroundMusic()
+    {
+        AudioManager.instance.PlayMusic("MenuMusic");
+    }
 
     public void PlayJump()
     {
