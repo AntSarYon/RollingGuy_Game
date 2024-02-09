@@ -109,6 +109,24 @@ public class PlayerMovement : MonoBehaviour
         gameManager = GameManager.Instance;
 
         //Inicializamos
+        ResetFlags();
+
+        attackMoveMultiplier = 1f;
+        attackDamage = 10;
+
+        actualAttackTime = 0.0f;
+        maxAttackTime = 0.45f;
+
+        actualHitTime = 0.0f;
+        maxHitTime = 0.5f;
+
+        actualAttackImpactTime = 0.0f;
+        maxAttackImpactTime = 0.35f;
+    }
+
+    private void ResetFlags()
+    {
+        //Inicializamos
         canDoubleJump = false;
         enPared = false;
 
@@ -117,21 +135,10 @@ public class PlayerMovement : MonoBehaviour
         isTeleporting = false;
         isImpactingEnemy = false;
 
-        attackMoveMultiplier = 1f;
-        attackDamage = 10;
-
         takeAttackTime = false;
-        actualAttackTime = 0.0f;
-        maxAttackTime = 0.45f;
-
         takeHitTime = false;
-        actualHitTime = 0.0f;
-        maxHitTime = 0.5f;
-
         takeAttackImpactTime = false;
-        actualAttackImpactTime = 0.0f;
-        maxAttackImpactTime = 0.35f;
-}
+    }
 
     //--------------------------------------------------------------
 
@@ -140,12 +147,20 @@ public class PlayerMovement : MonoBehaviour
         //Añadimos como observador de los Eventos a este Script.
         gameManager.OnPlayerDamage += OnPlayerDamageDelegate;
         gameManager.OnEnemyDamage += OnEnemyDamageDelegate;
-        gameManager.OnPlayerBeingResurrected += OnlayerDeathDelegate;
+        gameManager.OnPlayerDeath += OnPlayerDeathDelegate;
+        gameManager.OnPlayerBeingResurrected += OnPlayerBeingResurrectedDelegate;
     }
 
     //--------------------------------------------------------------
 
-    private void OnlayerDeathDelegate()
+    private void OnPlayerDeathDelegate()
+    {
+        
+    }
+
+    //--------------------------------------------------------------
+
+    private void OnPlayerBeingResurrectedDelegate()
     {
         //Teletransortamos al JUGADOR a las coordenadas del ultimo CheckPoint.
         transform.position = GameManager.Instance.UltimoCheckpoint;

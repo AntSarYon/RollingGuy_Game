@@ -78,8 +78,18 @@ public class HealthBarUI : MonoBehaviour
         //Si el valor Final del Slider será de 0
         if (sliderFinalValue <= 0)
         {
-            //Tras 1 segundo, invocamos al Evento de JugadorMuerto
-            Invoke(nameof(GameManager.Instance.PlayerDeath), 1f);
+            //Nos teletransortamos al nuevo punto de Checkpoint.
+            GameManager.Instance.Player.position = GameManager.Instance.UltimoCheckpoint;
+
+            //Reseteamos los valores de la Barra de Vida
+            sliderInitialValue = 100;
+            sliderFinalValue = 100;
+
+            //El factor de interpolacion inicia en 0
+            interpolation = 1;
+
+            //Devolvemos el Slider al Valor máximo
+            mSlider.value = mSlider.maxValue;
         }
     }
 
@@ -87,14 +97,6 @@ public class HealthBarUI : MonoBehaviour
 
     private void OnPlayerBeingResurrected()
     {
-        //Reseteamos los valores de la Barra de Vida
-        sliderInitialValue = 100;
-        sliderFinalValue = 100;
-
-        //El factor de interpolacion inicia en 0
-        interpolation = 1;
-
-        //Devolvemos el Slider al Valor máximo
-        mSlider.value = mSlider.maxValue;
+        
     }
 }
