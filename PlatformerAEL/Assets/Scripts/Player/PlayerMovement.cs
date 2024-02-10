@@ -58,6 +58,8 @@ public class PlayerMovement : MonoBehaviour
     private LayerMask capaEnemigos;
 
     //FLAGS de ESTADOS
+    private bool isAlive;
+
     private bool enPared;
     private bool canDoubleJump;
     private bool isTeleporting;
@@ -94,6 +96,7 @@ public class PlayerMovement : MonoBehaviour
     public bool IsTeleporting { get => isTeleporting; set => isTeleporting = value; }
     public Animator MAnimator { get => mAnimator; }
     public AudioSource MAudioSource { get => mAudioSource; set => mAudioSource = value; }
+    public bool IsAlive { get => isAlive; set => isAlive = value; }
 
     //-----------------------------------------------------------
 
@@ -109,6 +112,9 @@ public class PlayerMovement : MonoBehaviour
         gameManager = GameManager.Instance;
 
         //Inicializamos
+
+        IsAlive = true;
+
         ResetFlags();
 
         attackMoveMultiplier = 1f;
@@ -124,9 +130,12 @@ public class PlayerMovement : MonoBehaviour
         maxAttackImpactTime = 0.35f;
     }
 
+    //--------------------------------------------------------------
+
     private void ResetFlags()
     {
         //Inicializamos
+        isAlive = true;
         canDoubleJump = false;
         enPared = false;
 
@@ -138,6 +147,18 @@ public class PlayerMovement : MonoBehaviour
         takeAttackTime = false;
         takeHitTime = false;
         takeAttackImpactTime = false;
+    }
+
+    private void ResetAnimationFlags()
+    {
+        mAnimator.SetBool("IsDoubleJumping", false);
+        mAnimator.SetBool("IsJumping", false);
+        mAnimator.SetBool("IsRunning", false);
+        mAnimator.SetBool("IsFalling", false);
+        mAnimator.SetBool("IsAttacking", false);
+        mAnimator.SetBool("WallNear", false);
+        mAnimator.SetBool("IsBeingHit", false);
+        mAnimator.SetBool("IsTeleporting", false);
     }
 
     //--------------------------------------------------------------
@@ -153,6 +174,7 @@ public class PlayerMovement : MonoBehaviour
 
     //--------------------------------------------------------------
 
+    #region DELEGADOS DE EVENTOS 
     private void OnPlayerDeathDelegate()
     {
         
@@ -164,6 +186,18 @@ public class PlayerMovement : MonoBehaviour
     {
         //Teletransortamos al JUGADOR a las coordenadas del ultimo CheckPoint.
         transform.position = GameManager.Instance.UltimoCheckpoint;
+
+        //Reactivamos el Flag de está vivo
+        IsAlive = true;
+
+        //Reiniciamos los Flags
+        ResetFlags();
+        ResetAnimationFlags();
+
+        //Desactivamos la colision del Player
+        mCollider.enabled = true;
+        mRb.isKinematic = false;
+        mRb.gravityScale = 8;
     }
 
     //------------------------------------------------------------
@@ -195,6 +229,15 @@ public class PlayerMovement : MonoBehaviour
         
     }
 
+    #endregion
+
+    //------------------------------------------------------------
+    //Funcion: Invocar al Evento de Muerte de Jugador
+    public void Call_PlayerDeath()
+    {
+        GameManager.Instance.PlayerDeath();
+    }
+
     //------------------------------------------------------------
     private void ActualizarVelocidadEnX()
     {
@@ -205,6 +248,7 @@ public class PlayerMovement : MonoBehaviour
         );
     }
 
+    //--------------------------------------------------------------
     private void ControlarMovimientoHorizontal()
     {
         //Si recibimos algun input de movimeinto en X...
@@ -227,6 +271,8 @@ public class PlayerMovement : MonoBehaviour
             mAnimator.SetBool("IsRunning", false);
         }
     }
+
+    //--------------------------------------------------------------
 
     private void ControlarMovimientoVertical()
     {
@@ -251,6 +297,8 @@ public class PlayerMovement : MonoBehaviour
                 canDoubleJump = false;
             }
     }
+
+    //--------------------------------------------------------------
 
     private void ControlarSaltosDePared()
     {
@@ -282,6 +330,7 @@ public class PlayerMovement : MonoBehaviour
             
     }
 
+    //--------------------------------------------------------------
     private void ControlarAtaque()
     {
         //Si oprime Ctrl, y no se esta tomando el tiempo de ataque
@@ -329,6 +378,8 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    //--------------------------------------------------------------
+
     private void ControlarTiempoDeRetrocesoPorDaño()
     {
         //Si debemos calcular el tiempo desde el golpe
@@ -340,23 +391,56 @@ public class PlayerMovement : MonoBehaviour
             //Si el tiempo de ataque actual excede al medio segundo.
             if (actualHitTime >= maxHitTime)
             {
-                //Reiniciamos todos los valores y Flag
-                mAnimator.SetBool("IsBeingHit", false);
-                takeHitTime = false;
-                isBeingDamage = false;
+                // - - - -  - - - - -- N U E V O - - - -- -  - -- - - -  -- - - - --
+                //Si su vida llegó a 0 (Murió)
+                if (!IsAlive)
+                {
+                    //Disparamos el Trigger de la Animacion de Muerte
+                    MAnimator.SetTrigger("Death");
 
-                //Devolvemos el tiempo de Retroceso actual a 0
-                actualHitTime = 0f;
+                    // Dentro de la Animacion se invoca una Funcion que
+                    // hará el resto del Trabajo...
+
+                    //Hacemos que ya no tome el tiempo de retroceso
+                    takeHitTime = false;
+                    isBeingDamage = false;
+
+                    //Devolvemos el tiempo de Retroceso actual a 0
+                    actualHitTime = 0f;
+
+                    //Desactivamos la colision del Player y su RigidBody
+                    mCollider.enabled = false;
+                    mRb.velocity = Vector2.zero;
+                    mRb.isKinematic = true;
+                    mRb.gravityScale = 0;
+                }
+
+                // - - - -  - - - - -- N U E V O - - - -- -  - -- - - -  -- - - - --
+
+                //En caso su visa no haya llegado a 0
+                else
+                {
+                    //Reiniciamos todos los valores y Flags
+                    mAnimator.SetBool("IsBeingHit", false);
+                    takeHitTime = false;
+                    isBeingDamage = false;
+
+                    //Devolvemos el tiempo de Retroceso actual a 0
+                    actualHitTime = 0f;
+                }
+                
             }
         }
     }
 
+    //--------------------------------------------------------------
+
     private void ControlarTiempoDeRetrocesoPorImpactoDeAtaque()
     {
-        //Si el Flag para calcular el tiempo de Impacto esta activo
+        //Si el Flag para calcular el tiempo de Impacto (retroceso) esta activo
         if (takeAttackImpactTime)
         {
-            //Le vamos agregamos el DeltaTime al tiempo de Impacto actual ;
+            //Le agregamos el DeltaTime al tiempo de Impacto actual ;
             actualAttackImpactTime += Time.deltaTime;
 
             //Si el tiempo de ataque actual excede al medio segundo.
@@ -379,7 +463,7 @@ public class PlayerMovement : MonoBehaviour
 
     //------------------------------------------------------------
 
-    private void Update()
+    void Update()
     {
         //Le desactivamos las colisiones
         mCollider.enabled = true;
@@ -387,9 +471,9 @@ public class PlayerMovement : MonoBehaviour
         //Lo convertimos en Kinemático
         mRb.isKinematic = false;
 
-        //Si el jugador NO esta siendo atacado, ni se esté teletransportando
-        if (!isBeingDamage && !isTeleporting && !isImpactingEnemy)
-            {
+        //Si el jugador está Vivo... NO esta siendo atacado, ni se esté teletransportando
+        if (isAlive && !isBeingDamage && !isTeleporting && !isImpactingEnemy)
+        {
                 //Ejectamos sus funciones de movimiento con normalidad
 
                 ControlarAtaque();
@@ -401,7 +485,7 @@ public class PlayerMovement : MonoBehaviour
                 ControlarSaltosDePared();
 
                 ControlarMovimientoVertical();
-            }
+        }
 
             //En caso de que si esté siendo atacado
             else if (isBeingDamage)
@@ -577,6 +661,8 @@ public class PlayerMovement : MonoBehaviour
 
     //------------------------------------------------------------
 
+    #region RAYCASTs
+
     private bool HaySueloProximo()
     {
         //Obtenemos posiciones de referencia para ambas piernas
@@ -606,6 +692,8 @@ public class PlayerMovement : MonoBehaviour
         return (rc1 || rc2);
     }
 
+    //--------------------------------------------------------------
+
     private void OnDrawGizmos()
     {
         Vector3 posicionReferenciaX1 = new Vector3(this.transform.position.x-0.35f, transform.position.y - 0.30f, transform.position.z);
@@ -617,9 +705,11 @@ public class PlayerMovement : MonoBehaviour
         Vector3 posicionReferencia = new Vector3(this.transform.position.x, transform.position.y - 0.30f, transform.position.z);
         Gizmos.DrawRay(posicionReferencia, Vector2.left * 0.53f);
         Gizmos.DrawRay(posicionReferencia, Vector2.right * 0.53f);
-
-
     }
+
+    #endregion
+
+    //--------------------------------------------------------------
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -630,6 +720,8 @@ public class PlayerMovement : MonoBehaviour
                 gameManager.EvaluarYActualizarCheckpoint(transform.position);
             }
     }
+
+    //--------------------------------------------------------------
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -651,7 +743,6 @@ public class PlayerMovement : MonoBehaviour
                 //Activamos el flag para empezar a calcular el tiempo de retroceso por impacto de Ataque
                 takeAttackImpactTime = true;
             }
-            
         }
     }
 }

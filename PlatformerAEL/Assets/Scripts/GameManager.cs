@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     public event UnityAction OnPlayerBeingResurrected;
 
     //Referencia al Transform del Player
-    private Transform player;
+    private PlayerMovement player;
 
     //Vectorees de Coordenadas para conocer los limites del Mapa
     private Vector3 coorLeftLimit; //(Limite izquierdo)
@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
     #region GETTERS Y SETTERS
     public Vector3 UltimoCheckpoint { get => ultimoCheckpoint; set => ultimoCheckpoint = value; }
     public float DamageReceivedInProgress { get => damageReceivedInProgress; set => damageReceivedInProgress = value; }
-    public Transform Player { get => player; set => player = value; }
+    public PlayerMovement Player { get => player; set => player = value; }
 
     #endregion
     //---------------------------------------------------------------------------------------
@@ -45,15 +45,15 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        //Obtenemos Referencia al Player
-        Player = GameObject.Find("Player").transform;
+        //Obtenemos Referencia al Script del Player
+        Player = GameObject.Find("Player").GetComponent<PlayerMovement>();
 
         //Obtenemos Coordenadas del Limite del Mapa
         coorRightLimit = GameObject.Find("RightLimitCoor").transform.position;
         coorLeftLimit = GameObject.Find("LeftLimitCoor").transform.position;
 
         //Seteamos el primer Checkpoint como la posición de inicio del jugador.
-        UltimoCheckpoint = Player.position;
+        UltimoCheckpoint = Player.transform.position;
     }
 
     //-----------------------------------------------------------------------------------
@@ -74,6 +74,9 @@ public class GameManager : MonoBehaviour
 
     public void PlayerDeath()
     {
+        //HUD Inicia el FadeIn
+        HudController.Instance.PlayFadeIn();
+
         //**Llamamos a los delegados**
         OnPlayerDeath?.Invoke();
     }
@@ -98,10 +101,10 @@ private void Update()
     public void LimitarMovimientoHorizontal()
     {
         //Aplicar un Mathf.Clamp en el Eje X del Jugador -> Lo condicionamos a permanecer dentro de los limites del Mapa
-        Player.position = new Vector3(
-            Mathf.Clamp(Player.position.x, coorLeftLimit.x, coorRightLimit.x),
-            Player.position.y,
-            Player.position.z
+        Player.transform.position = new Vector3(
+            Mathf.Clamp(Player.transform.position.x, coorLeftLimit.x, coorRightLimit.x),
+            Player.transform.position.y,
+            Player.transform.position.z
             );
     }
 

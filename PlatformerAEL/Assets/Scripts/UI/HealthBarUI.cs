@@ -38,13 +38,11 @@ public class HealthBarUI : MonoBehaviour
     {
         //Añadimos al HealthBar como Observador de Eventos
         GameManager.Instance.OnPlayerDamage += OnPlayerDamageDelegate; 
-        GameManager.Instance.OnPlayerDamage += OnPlayerBeingResurrected;
+        GameManager.Instance.OnPlayerBeingResurrected += OnPlayerBeingResurrected;
 
         //Actualizamos el valor inicial del Slider
         sliderInitialValue = mSlider.value;
     }
-
-    
 
     void Update()
     {
@@ -78,18 +76,8 @@ public class HealthBarUI : MonoBehaviour
         //Si el valor Final del Slider será de 0
         if (sliderFinalValue <= 0)
         {
-            //Nos teletransortamos al nuevo punto de Checkpoint.
-            GameManager.Instance.Player.position = GameManager.Instance.UltimoCheckpoint;
-
-            //Reseteamos los valores de la Barra de Vida
-            sliderInitialValue = 100;
-            sliderFinalValue = 100;
-
-            //El factor de interpolacion inicia en 0
-            interpolation = 1;
-
-            //Devolvemos el Slider al Valor máximo
-            mSlider.value = mSlider.maxValue;
+            //Desactivamos el Flag de Jugador Vivo -< Se murió
+            GameManager.Instance.Player.IsAlive = false;
         }
     }
 
@@ -97,6 +85,15 @@ public class HealthBarUI : MonoBehaviour
 
     private void OnPlayerBeingResurrected()
     {
+        //Reseteamos los valores de la Barra de Vida
+        sliderInitialValue = 100;
+        sliderFinalValue = 100;
+
+        //El factor de interpolacion inicia en 0
+        interpolation = 1;
+
+        //Devolvemos el Slider al Valor máximo
+        mSlider.value = mSlider.maxValue;
         
     }
 }

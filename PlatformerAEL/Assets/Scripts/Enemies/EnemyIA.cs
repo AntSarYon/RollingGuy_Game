@@ -68,7 +68,7 @@ public class EnemyIA : MonoBehaviour
         //Inicializamos
         distanciaDeteccion = 4.5f;
 
-        attackDamage = 10;
+        attackDamage = 30;
 
         takeDamageTime = false;
         actualDamageTime = 0f;
