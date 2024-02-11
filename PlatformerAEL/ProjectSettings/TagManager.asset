@@ -51,14 +51,8 @@ TagManager:
   - name: Background
     uniqueID: 2128606253
     locked: 0
-  - name: Water
-    uniqueID: 3383486495
-    locked: 0
   - name: Props
     uniqueID: 425464171
-    locked: 0
-  - name: Platforms
-    uniqueID: 740856315
     locked: 0
   - name: Checkpoint
     uniqueID: 2926822779
@@ -68,4 +62,10 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 2635074297
+    locked: 0
+  - name: Water
+    uniqueID: 3383486495
+    locked: 0
+  - name: Platforms
+    uniqueID: 740856315
     locked: 0

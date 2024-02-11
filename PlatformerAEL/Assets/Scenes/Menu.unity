@@ -2631,6 +2631,8 @@ MonoBehaviour:
     source: {fileID: 0}
   - audioSO: {fileID: 11400000, guid: 28384ae270ab8724ca91257244a25875, type: 2}
     source: {fileID: 0}
+  - audioSO: {fileID: 11400000, guid: 01b73797b07d5334f9ffa391ef11dda5, type: 2}
+    source: {fileID: 0}
 --- !u!1 &1518105143
 GameObject:
   m_ObjectHideFlags: 0

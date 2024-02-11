@@ -260,8 +260,8 @@ public class EnemyIA : MonoBehaviour
             distanciaDeteccion,
             LayerMask.GetMask("Player")
        );
-
-            if (raycastLeft)
+            //Si detecto al Jugador a la izquierda, y esta vivo...
+            if (raycastLeft && GameManager.Instance.Player.IsAlive)
             {
                 //Le invertimos la escala en X si fuera necesario
                 if (transform.localScale.x < 0)
@@ -275,7 +275,9 @@ public class EnemyIA : MonoBehaviour
                 //Activamos la animacion de Ataque
                 mAnimator.SetBool("IsAttacking1", true);
             }
-            else if (raycastRight)
+
+        //Si detecto al Jugador a la derecha, y esta vivo...
+        else if (raycastRight && GameManager.Instance.Player.IsAlive)
             {
                 //Le invertimos la escala en X si fuera necesario
                 if (transform.localScale.x > 0)

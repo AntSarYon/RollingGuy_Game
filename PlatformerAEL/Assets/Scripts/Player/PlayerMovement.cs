@@ -198,6 +198,8 @@ public class PlayerMovement : MonoBehaviour
         mCollider.enabled = true;
         mRb.isKinematic = false;
         mRb.gravityScale = 8;
+
+        mRb.velocity = Vector2.zero;
     }
 
     //------------------------------------------------------------
@@ -397,6 +399,8 @@ public class PlayerMovement : MonoBehaviour
                 {
                     //Disparamos el Trigger de la Animacion de Muerte
                     MAnimator.SetTrigger("Death");
+
+                    AudioManager.instance.PlaySfx("Damage2");
 
                     // Dentro de la Animacion se invoca una Funcion que
                     // hará el resto del Trabajo...
@@ -719,18 +723,25 @@ public class PlayerMovement : MonoBehaviour
                 //Evalua nuestra posicion actual para ser considerado como nuevo Checkpoint
                 gameManager.EvaluarYActualizarCheckpoint(transform.position);
             }
+
+        //Si chocamos con un objeto de la capa Water
+        if (mCollider.IsTouchingLayers(LayerMask.GetMask("Water")))
+        {
+            //Disparamos el Trigger de la Animacion de Muerte
+            MAnimator.SetTrigger("Death");
+
+            //Reproducimos sonido de Agua
+            AudioManager.instance.PlaySfx("FallingWater");
+
+            //Desactivamos el Flag de Vivo
+            IsAlive = false;
+        }
     }
 
     //--------------------------------------------------------------
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        //Si chocamos con un objeto de la capa Water
-        if (mCollider.IsTouchingLayers(LayerMask.GetMask("Water")))
-        {
-            //Nos teletransortamos al ultimo punto de Checkpoint.
-            transform.position = gameManager.UltimoCheckpoint;
-        }
         //Si chocamos con un objeto de la capa Enemigo
         if (mCollider.IsTouchingLayers(LayerMask.GetMask("Enemy")))
         {

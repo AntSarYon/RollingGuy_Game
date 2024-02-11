@@ -18,6 +18,9 @@ public class GameManager : MonoBehaviour
     public event UnityAction OnPlayerDeath;
     public event UnityAction OnPlayerBeingResurrected;
 
+    //Flag de Victoria
+    public bool Victory;
+
     //Referencia al Transform del Player
     private PlayerMovement player;
 
@@ -39,6 +42,11 @@ public class GameManager : MonoBehaviour
     {
         //Declaramos este Script como Instancia
         Instance = this;
+
+        //Iniciamos el Flag de Victoria en FALSO
+        Victory = false;
+
+       
     }
 
     //---------------------------------------------------------------------------------------------------------
