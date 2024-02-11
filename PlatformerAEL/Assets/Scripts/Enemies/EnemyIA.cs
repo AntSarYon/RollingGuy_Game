@@ -7,8 +7,6 @@ using UnityEngine.UIElements;
 
 public class EnemyIA : MonoBehaviour
 {
-    private GameManager gameManager;
-
     //Velocidad
     //[SerializeField]
     //private float speed = -1f;
@@ -73,6 +71,14 @@ public class EnemyIA : MonoBehaviour
         takeDamageTime = false;
         actualDamageTime = 0f;
         maxDamageTime = 0.4f;
+    }
+
+    //---------------------------------------------------------------------------------
+
+    public void IncreasePlayerPoints()
+    {
+        //Invocamos a la funcion de enemigo Muerto
+        GameManager.Instance.EnemyDeath();
     }
 
     //---------------------------------------------------------------------------------

@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     public event UnityAction OnPlayerDamage;
     public event UnityAction OnEnemyDamage;
     public event UnityAction OnPlayerDeath;
+    public event UnityAction OnEnemyDeath;
     public event UnityAction OnPlayerBeingResurrected;
 
     //Flag de Victoria
@@ -87,6 +88,15 @@ public class GameManager : MonoBehaviour
 
         //**Llamamos a los delegados**
         OnPlayerDeath?.Invoke();
+    }
+
+    public void EnemyDeath()
+    {
+        //Incrementamos 100 puntos
+        PointsManager.Instance.actualPoints += 100;
+
+        //**Llamamos a los delegados**
+        OnEnemyDeath?.Invoke();
     }
 
     public void PlayerBeingResurrected()

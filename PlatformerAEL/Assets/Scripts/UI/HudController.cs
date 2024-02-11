@@ -13,9 +13,17 @@ public class HudController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI txtTimer1;
     [SerializeField] private TextMeshProUGUI txtTimer2;
 
-    [Header("TXTs de Record")]
+    [Header("TXTs de Record de Tiempo")]
     [SerializeField] private TextMeshProUGUI txtRecord1;
     [SerializeField] private TextMeshProUGUI txtRecord2;
+
+    [Header("TXTs de Puntos")]
+    [SerializeField] private TextMeshProUGUI txtPoints1;
+    [SerializeField] private TextMeshProUGUI txtPoints2;
+
+    [Header("TXTs de Record de Puntos")]
+    [SerializeField] private TextMeshProUGUI txtRecordPoints1;
+    [SerializeField] private TextMeshProUGUI txtRecordPoints2;
 
     //------------------------------------------------
 
@@ -33,6 +41,9 @@ public class HudController : MonoBehaviour
     {
         //Acualizamos al inicio de la Partida EL TXT de tiempo Record
         SetRecord();
+
+        //Actualizamos el Puntaje Record;
+        SetRecordPoints();
     }
 
     //--------------------------------------------------------------------------------------
@@ -41,6 +52,9 @@ public class HudController : MonoBehaviour
     {
         //Acualizamos constantemente los TXT de tiempo
         UpdateTimer();
+
+        //Acualizamos constantemente los Puntos
+        UpdatePoints();
     }
 
     //--------------------------------------------------------------------------------------
@@ -59,7 +73,6 @@ public class HudController : MonoBehaviour
         }
     }
 
-    //--------------------------------------------------------------------------------------
 
     private void SetRecord()
     {
@@ -74,6 +87,20 @@ public class HudController : MonoBehaviour
             txtRecord1.text = $"{Timer.Instance.recordMinutes}:{(int)Timer.Instance.recordSeconds}";
             txtRecord2.text = $"{Timer.Instance.recordMinutes}:{(int)Timer.Instance.recordSeconds}";
         }
+    }
+
+    //--------------------------------------------------------------------------------------
+
+    public void UpdatePoints()
+    {
+        txtPoints1.text = PointsManager.Instance.actualPoints.ToString();
+        txtPoints2.text = PointsManager.Instance.actualPoints.ToString();
+    }
+
+    public void SetRecordPoints()
+    {
+        txtRecordPoints1.text = PointsManager.Instance.recordPoints.ToString() + " points";
+        txtRecordPoints2.text = PointsManager.Instance.recordPoints.ToString() + " points";
     }
 
     //--------------------------------------------------------------------------------------
