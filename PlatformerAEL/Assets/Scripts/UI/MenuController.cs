@@ -46,7 +46,13 @@ public class MenuController : MonoBehaviour
 
     public void PlayBackgroundMusic()
     {
-        AudioManager.instance.PlayMusic("MenuMusic");
+        AudioManager.instance.updateMusic("MenuMusic");
+    }
+
+    public void PlayBlankMusic()
+    {
+        //Actualizamos la musica al Blank
+        AudioManager.instance.updateMusic("Blank");
     }
 
     public void PlayJump()

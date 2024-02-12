@@ -42,7 +42,7 @@ public class AudioManager : MonoBehaviour
     }
     private void Start()
     {
-        //PlayMusic("MenuMusic");
+        PlayMusic("Blank");
     }
 
     public void PlaySfx(string name)
@@ -88,14 +88,6 @@ public class AudioManager : MonoBehaviour
         foreach (Sound s in sfx)
         {
             s.source.volume = volume;
-        }
-    }
-
-    private void Update()
-    {
-        if (SceneManager.GetActiveScene().name == "Level1")
-        {
-            updateMusic("BackgroundMusic");
         }
     }
 }

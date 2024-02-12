@@ -9,7 +9,7 @@ public class PointsManager : MonoBehaviour
     public int actualPoints;
     public int recordPoints;
 
-    //-----------------------------------------------
+    //-------------------------------------------------------------
 
     void Awake()
     {
@@ -17,6 +17,13 @@ public class PointsManager : MonoBehaviour
 
         //Inicializmaos los puntos actuales y el Record
         actualPoints = 0;
-        recordPoints = 500;
+        
+    }
+
+    //---------------------------------------------------------------
+
+    void Start()
+    {
+        recordPoints = RecordManager.Instance.pointsRecord;
     }
 }

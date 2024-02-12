@@ -13,7 +13,7 @@ public class PlayerMovement : MonoBehaviour
     //Variables de Velocidad
     [Header("Velocidad de Movimiento")]
     [SerializeField]
-    private float runSpeed = 5f;
+    private float runSpeed = 8f;
     //- - - - - - - 
     [Header("Velocidad de Salto")]
     [SerializeField]
@@ -195,6 +195,7 @@ public class PlayerMovement : MonoBehaviour
         ResetAnimationFlags();
 
         //Desactivamos la colision del Player
+        attackMoveMultiplier = 1.0f;
         mCollider.enabled = true;
         mRb.isKinematic = false;
         mRb.gravityScale = 8;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -25,6 +26,9 @@ public class HudController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI txtRecordPoints1;
     [SerializeField] private TextMeshProUGUI txtRecordPoints2;
 
+    [Header("UI Menu de Victoria")]
+    [SerializeField] private GameObject VictoryMenu;
+
     //------------------------------------------------
 
     void Awake()
@@ -39,11 +43,29 @@ public class HudController : MonoBehaviour
 
     void Start()
     {
+        //Lo hacmeos Delegado del Evento de Victoria
+        GameManager.Instance.OnVictoryAchieved += OnVicoryAchievedDelegate;
+
+        //Ocultamos el Panel de Victoria
+        VictoryMenu.SetActive(false);
+
         //Acualizamos al inicio de la Partida EL TXT de tiempo Record
         SetRecord();
 
         //Actualizamos el Puntaje Record;
         SetRecordPoints();
+
+        //Actualizamos la musica al Blank
+        AudioManager.instance.updateMusic("BackgroundMusic");
+
+    }
+
+    //--------------------------------------------------------------------------------------
+
+    private void OnVicoryAchievedDelegate()
+    {
+        //Mostramos el Panel de Victoria
+        VictoryMenu.SetActive(true);
     }
 
     //--------------------------------------------------------------------------------------
@@ -77,15 +99,15 @@ public class HudController : MonoBehaviour
     private void SetRecord()
     {
         
-        if (Timer.Instance.recordSeconds < 10)
+        if (RecordManager.Instance.secondsRecord < 10)
         {
-            txtRecord1.text = $"{Timer.Instance.recordMinutes}:0{(int)Timer.Instance.recordSeconds}";
-            txtRecord2.text = $"{Timer.Instance.recordMinutes}:0{(int)Timer.Instance.recordSeconds}";
+            txtRecord1.text = $"{RecordManager.Instance.minutesRecord}:0{(int)RecordManager.Instance.secondsRecord}";
+            txtRecord2.text = $"{RecordManager.Instance.minutesRecord}:0{(int)RecordManager.Instance.secondsRecord}";
         }
         else
         {
-            txtRecord1.text = $"{Timer.Instance.recordMinutes}:{(int)Timer.Instance.recordSeconds}";
-            txtRecord2.text = $"{Timer.Instance.recordMinutes}:{(int)Timer.Instance.recordSeconds}";
+            txtRecord1.text = $"{RecordManager.Instance.minutesRecord}:{(int)RecordManager.Instance.secondsRecord}";
+            txtRecord2.text = $"{RecordManager.Instance.minutesRecord}:{(int)RecordManager.Instance.secondsRecord}";
         }
     }
 
@@ -99,8 +121,8 @@ public class HudController : MonoBehaviour
 
     public void SetRecordPoints()
     {
-        txtRecordPoints1.text = PointsManager.Instance.recordPoints.ToString() + " points";
-        txtRecordPoints2.text = PointsManager.Instance.recordPoints.ToString() + " points";
+        txtRecordPoints1.text = RecordManager.Instance.pointsRecord.ToString() + " points";
+        txtRecordPoints2.text = RecordManager.Instance.pointsRecord.ToString() + " points";
     }
 
     //--------------------------------------------------------------------------------------
@@ -113,6 +135,11 @@ public class HudController : MonoBehaviour
     public void PlayFadeOut()
     {
         mAnimator.Play("FadeOut");
+    }
+
+    public void PlayVictoryFadeIn()
+    {
+        mAnimator.Play("FadeInVictory");
     }
 
     //-------------------------------------------------

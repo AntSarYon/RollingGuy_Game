@@ -18,9 +18,7 @@ public class GameManager : MonoBehaviour
     public event UnityAction OnPlayerDeath;
     public event UnityAction OnEnemyDeath;
     public event UnityAction OnPlayerBeingResurrected;
-
-    //Flag de Victoria
-    public bool Victory;
+    public event UnityAction OnVictoryAchieved;
 
     //Referencia al Transform del Player
     private PlayerMovement player;
@@ -42,12 +40,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         //Declaramos este Script como Instancia
-        Instance = this;
-
-        //Iniciamos el Flag de Victoria en FALSO
-        Victory = false;
-
-       
+        Instance = this;       
     }
 
     //---------------------------------------------------------------------------------------------------------
@@ -105,11 +98,17 @@ public class GameManager : MonoBehaviour
         OnPlayerBeingResurrected?.Invoke();
     }
 
+    public void VictoryAchieved()
+    {
+        //**Llamamos a los delegados**
+        OnVictoryAchieved?.Invoke();
+    }
+
     #endregion
 
-//-------------------------------------------------------------
+    //-------------------------------------------------------------
 
-private void Update()
+    private void Update()
     {
         LimitarMovimientoHorizontal();
     }

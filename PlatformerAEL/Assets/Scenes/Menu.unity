@@ -2606,6 +2606,8 @@ MonoBehaviour:
     source: {fileID: 0}
   - audioSO: {fileID: 11400000, guid: a0aabe0d65c2c0043810329fb493ae1e, type: 2}
     source: {fileID: 0}
+  - audioSO: {fileID: 11400000, guid: bcb58484ac1b07a4da53ddd62bdeba31, type: 2}
+    source: {fileID: 0}
   sfx:
   - audioSO: {fileID: 11400000, guid: dde0087f5b20f794cab1566b8627a28f, type: 2}
     source: {fileID: 0}
