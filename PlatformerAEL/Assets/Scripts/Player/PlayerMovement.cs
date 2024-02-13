@@ -97,6 +97,7 @@ public class PlayerMovement : MonoBehaviour
     public Animator MAnimator { get => mAnimator; }
     public AudioSource MAudioSource { get => mAudioSource; set => mAudioSource = value; }
     public bool IsAlive { get => isAlive; set => isAlive = value; }
+    public Rigidbody2D MRb { get => mRb; set => mRb = value; }
 
     //-----------------------------------------------------------
 
@@ -477,8 +478,8 @@ public class PlayerMovement : MonoBehaviour
         //Lo convertimos en Kinemático
         mRb.isKinematic = false;
 
-        //Si el jugador está Vivo... NO esta siendo atacado, ni se esté teletransportando
-        if (isAlive && !isBeingDamage && !isImpactingEnemy)
+        //Si el jugador está Vivo... NO esta siendo atacado, y aun no ganamos
+        if (isAlive && !isBeingDamage && !isImpactingEnemy && !VictoryCheck.Instance.Victory)
         {
                 //Ejectamos sus funciones de movimiento con normalidad
 

@@ -15,7 +15,7 @@ MonoBehaviour:
   id: Damage3
   clips:
   - {fileID: 8300000, guid: b3f4868fa2dd7f248be62d515f3a3af9, type: 3}
-  volume: 1
+  volume: 0.65
   frequencyLevel: 2
   minPitch: 1
   maxPitch: 1
