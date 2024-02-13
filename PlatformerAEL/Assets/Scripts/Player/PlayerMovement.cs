@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
     //Variables de Velocidad
     [Header("Velocidad de Movimiento")]
     [SerializeField]
-    private float runSpeed = 8f;
+    private float runSpeed = 8.25f;
     //- - - - - - - 
     [Header("Velocidad de Salto")]
     [SerializeField]
@@ -341,7 +341,7 @@ public class PlayerMovement : MonoBehaviour
     private void ControlarAtaque()
     {
         //Si oprime Ctrl, y no se esta tomando el tiempo de ataque
-        if (Input.GetKeyDown(KeyCode.LeftControl) && takeAttackTime == false)
+        if (Input.GetKeyDown(KeyCode.C) && takeAttackTime == false)
         {
             //  Modificamos el multiplicador de velocidad a 3
             attackMoveMultiplier = 3f;

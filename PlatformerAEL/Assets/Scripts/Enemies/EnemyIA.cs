@@ -161,10 +161,15 @@ public class EnemyIA : MonoBehaviour
                 //Llamo al Evento EnemyDamage para aumentar la Barra de ataque
                 GameManager.Instance.EnemyDamage();
 
+                if (vida > 0)
+                {
+                    mAudioSource.PlayOneShot(clipDamage, 0.75f);
+                }
+
                 //Disminuimos la Vida en base al Daño recibido
                 vida -= recievedDamage;
 
-                mAudioSource.PlayOneShot(clipDamage, 0.75f);
+                
             }
         }
     }
@@ -196,6 +201,11 @@ public class EnemyIA : MonoBehaviour
         }
     }
 
+    public void DesactivateEnemie()
+    {
+        gameObject.SetActive(false);
+    }
+
     //------------------------------------------------------------------
     private void DetectarYAtacar()
     {
@@ -205,7 +215,7 @@ public class EnemyIA : MonoBehaviour
         RaycastHit2D raycastLeft = Physics2D.Raycast(
             new Vector2(
                 transform.position.x,
-                transform.position.y - 1.25f
+                transform.position.y - 0.25f
             ),
             Vector2.left,
             distanciaDeteccion,
@@ -214,7 +224,7 @@ public class EnemyIA : MonoBehaviour
         RaycastHit2D raycastRight = Physics2D.Raycast(
             new Vector2(
                 transform.position.x,
-                transform.position.y - 1.25f
+                transform.position.y - 0.25f
             ),
             Vector2.right,
             distanciaDeteccion,
