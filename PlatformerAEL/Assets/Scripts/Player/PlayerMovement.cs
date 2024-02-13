@@ -10,6 +10,8 @@ public class PlayerMovement : MonoBehaviour
     //Referencia al GameManager
     private GameManager gameManager;
 
+    public static PlayerMovement Instance;
+
     //Variables de Velocidad
     [Header("Velocidad de Movimiento")]
     [SerializeField]
@@ -102,6 +104,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
+        Instance = this;
+
         //Obtenemos componentes
         mRb = GetComponent<Rigidbody2D>();
         mAnimator = GetComponent<Animator>();

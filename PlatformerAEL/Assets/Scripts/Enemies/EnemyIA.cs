@@ -7,19 +7,12 @@ using UnityEngine.UIElements;
 
 public class EnemyIA : MonoBehaviour
 {
-    //Velocidad
-    //[SerializeField]
-    //private float speed = -1f;
 
-    private float vida = 15f;
+    private float vida = 10f;
 
     private float recievedDamage;
 
     private float attackDamage;
-
-    //Distancia del Rayo
-    //[SerializeField]
-    //private float rayDistance = 4f;
 
     [SerializeField]
     private float distanciaDeteccion;
@@ -38,10 +31,6 @@ public class EnemyIA : MonoBehaviour
     [Header("Sonido de Muerte")]
     [SerializeField]
     private AudioClip clipDead;
-
-    //Flag de Atacado
-    //[SerializeField]
-    //private bool atacado = false;
 
     //Flag de Recibiendo daño
     [SerializeField]
@@ -84,8 +73,29 @@ public class EnemyIA : MonoBehaviour
     //---------------------------------------------------------------------------------
     private void Update()
     {
+        // - - - - - - - - - - - - - - N U E V O - - - - - - - - - - - - -- - - - - - - - - 
+
+        //Si el Jugador está atacando...
+        if (PlayerMovement.Instance.IsAttacking)
+        {
+            //Hacemos el RigidBody Kinematico
+            mRb.isKinematic = true;
+            //Hacemos trigger el collider del Enemigo
+            mCollider.isTrigger = true;
+        }
+        //Si el Jugador no esta atacando, y aun queda vida
+        else if(!PlayerMovement.Instance.IsAttacking && vida > 0)
+        {
+            //Hacemos el RigidBody Dinamico
+            mRb.isKinematic = false;
+            //Hacemos Collider normal (No Trigger) el collider del Enemigo
+            mCollider.isTrigger = false;
+        }
+
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - -- - - - - - - - - 
+
         //Si no ha sido atacado...
-        if (!isBeingDamage)
+        if (!isBeingDamage && vida > 0)
         {
             //Detectamos al jugador
             DetectarYAtacar();
@@ -111,27 +121,29 @@ public class EnemyIA : MonoBehaviour
         }
 
     }
-    //------------------------------------------------------------------------------------
-    /*private bool VerificarCaida()
-    {
-        //Lanzar raycast hacia el suelo delante
-        var hit = Physics2D.Raycast(
-            transform.position,
-            new Vector2(
-                mRb.velocity.x < 0f ? -1 : 1,
-                -1f
-            ).normalized,
-            rayDistance,
-            LayerMask.GetMask("Ground") //Buscamos un choque con la capa Ground
-        );
-
-        //Retornamos el resultado (Impacto o caida)
-        return hit;
-    }*/
 
     //---------------------------------------------------------------------
 
     private void OnCollisionEnter2D(Collision2D collision)
+    {
+        //Si he colisionado con el Jugador...
+        if (collision.transform.CompareTag("Player"))
+        {
+            //Si no me esta atacando; llamo al Evento de hacer Daño
+            if(!collision.gameObject.GetComponent<PlayerMovement>().IsAttacking)
+            {
+                //Seteamos el Daño que será aplicado al jugador
+                GameManager.Instance.DamageReceivedInProgress = attackDamage;
+
+                //Llamamos al Evento de Jugador dañado
+                GameManager.Instance.PlayerDamage();
+            }
+        }
+    }
+
+    // - - - - - - - - - - - - - - N U E V O - - - - - - - - - - - - -- - - - - - - - - 
+
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         //Si he colisionado con el Jugador...
         if (collision.transform.CompareTag("Player"))
@@ -145,7 +157,7 @@ public class EnemyIA : MonoBehaviour
 
                 //Almaceno su daño de ataque
                 recievedDamage = collision.gameObject.GetComponent<PlayerMovement>().AttackDamage;
-                
+
                 //Llamo al Evento EnemyDamage para aumentar la Barra de ataque
                 GameManager.Instance.EnemyDamage();
 
@@ -154,43 +166,10 @@ public class EnemyIA : MonoBehaviour
 
                 mAudioSource.PlayOneShot(clipDamage, 0.75f);
             }
-            //Si no me esta atacando; llamo al Evento de hacer Daño
-            else
-            {
-                //Seteamos el Daño que será aplicado al jugador
-                GameManager.Instance.DamageReceivedInProgress = attackDamage;
-
-                //Llamamos al Evento de Jugador dañado
-                GameManager.Instance.PlayerDamage();
-            }
         }
     }
 
-    //---------------------------------------------------------------------
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        //Si he colisionado con el Jugador...
-        if (collision.transform.CompareTag("Player"))
-        {
-
-        }
-    }
-
-    //---------------------------------------------------------------------
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        //Si me mantengo colisionando con el Jugador...
-        if (collision.transform.CompareTag("Player"))
-        {
-            //Si el Jugador NO ESTA ATACANDO
-            if (!collision.gameObject.GetComponent<PlayerMovement>().IsAttacking)
-            {
-                //Lanzo el evento de Hacer Daño
-                //GameManager.Instance.PlayerDamage(); <------ Con el retroceso de Impacto esto ya no es necesario
-            }
-                
-        }
-    }
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - -- - - - - - - - - - - - - - - - - - - - - - -
 
     //----------------------------------------------------
 
@@ -216,31 +195,6 @@ public class EnemyIA : MonoBehaviour
             }
         }
     }
-
-    //------------------------------------------------------------------
-    /*private void Mover()
-    {
-        //Actualiza la velocidad
-        mRb.velocity = new Vector2(speed, mRb.velocity.y);
-    }*/
-
-    //------------------------------------------------------------------
-    /*private void ControlarGirosEnCorniza()
-    {
-        //Si detecta que hay una caida en esa dirección...
-        if (!VerificarCaida())
-        {
-            // Cambiar direccion
-            speed *= -1;
-
-            //Volteate
-            transform.localScale = new Vector3(
-                Mathf.Sign(mRb.velocity.x) * transform.localScale.x,
-                transform.localScale.y,
-                transform.localScale.z
-            );
-        }
-    }*/
 
     //------------------------------------------------------------------
     private void DetectarYAtacar()
