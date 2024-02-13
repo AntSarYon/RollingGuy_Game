@@ -64,7 +64,6 @@ public class PlayerMovement : MonoBehaviour
 
     private bool enPared;
     private bool canDoubleJump;
-    private bool isTeleporting;
     private bool isAttacking;
     private bool isBeingDamage;
     private bool isImpactingEnemy;
@@ -95,7 +94,6 @@ public class PlayerMovement : MonoBehaviour
     // GETTERS y SETTERS
     public bool IsAttacking { get => isAttacking; }
     public float AttackDamage { get => attackDamage; }
-    public bool IsTeleporting { get => isTeleporting; set => isTeleporting = value; }
     public Animator MAnimator { get => mAnimator; }
     public AudioSource MAudioSource { get => mAudioSource; set => mAudioSource = value; }
     public bool IsAlive { get => isAlive; set => isAlive = value; }
@@ -145,7 +143,6 @@ public class PlayerMovement : MonoBehaviour
 
         isBeingDamage = false;
         isAttacking = false;
-        isTeleporting = false;
         isImpactingEnemy = false;
 
         takeAttackTime = false;
@@ -481,7 +478,7 @@ public class PlayerMovement : MonoBehaviour
         mRb.isKinematic = false;
 
         //Si el jugador está Vivo... NO esta siendo atacado, ni se esté teletransportando
-        if (isAlive && !isBeingDamage && !isTeleporting && !isImpactingEnemy)
+        if (isAlive && !isBeingDamage && !isImpactingEnemy)
         {
                 //Ejectamos sus funciones de movimiento con normalidad
 
@@ -527,35 +524,6 @@ public class PlayerMovement : MonoBehaviour
 
                 //Controlamos el tiempo de retroceso para no atascarnos
                 ControlarTiempoDeRetrocesoPorDaño();
-            }
-
-            //En caso de que se esté teletransportando
-            else if (isTeleporting)
-            {
-                float movX = 0f;
-                float movY = 0f;
-
-            //Le desactivamos las colisiones
-            mCollider.enabled = false;
-
-                //Lo convertimos en Kinemático
-                mRb.isKinematic = true;
-
-                //Desactivamos todas sus animaciones, y activamos la de Teletransporte
-                mAnimator.SetBool("IsDoubleJumping", false);
-                mAnimator.SetBool("IsJumping", false);
-                mAnimator.SetBool("IsRunning", false);
-                mAnimator.SetBool("IsFalling", false);
-                mAnimator.SetBool("IsAttacking", false);
-                mAnimator.SetBool("WallNear", false);
-                mAnimator.SetBool("IsBeingHit", false);
-                mAnimator.SetBool("IsTeleporting", true);
-
-                movX = Input.GetAxisRaw("Horizontal");
-                movY = Input.GetAxisRaw("Vertical");
-
-                //Movemos al Perosnaje en base un Traslado
-                MoveTP(movX, movY);
             }
             else if (isImpactingEnemy)
             {
