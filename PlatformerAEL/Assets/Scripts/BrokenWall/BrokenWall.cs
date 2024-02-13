@@ -33,7 +33,7 @@ public class BrokenWall : MonoBehaviour
         else 
         {
             //Si el jugador esta atacando, y se está moviendo horizontalmente
-            if (PlayerMovement.Instance.IsAttacking && (PlayerMovement.Instance.MRb.velocity.x > 20 || PlayerMovement.Instance.MRb.velocity.x < -20))
+            if (PlayerMovement.Instance.IsAttacking) // && (PlayerMovement.Instance.MRb.velocity.x > 20 || PlayerMovement.Instance.MRb.velocity.x < -20))
             {
                 mCollider.isTrigger = true;
             }
