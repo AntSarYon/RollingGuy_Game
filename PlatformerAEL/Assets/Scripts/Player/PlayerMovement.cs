@@ -698,7 +698,7 @@ public class PlayerMovement : MonoBehaviour
                 gameManager.EvaluarYActualizarCheckpoint(transform.position);
             }
 
-        //Si chocamos con un objeto de la capa Water
+        //Si chocamos con un objeto de la capa Water o Pikes
         if (mCollider.IsTouchingLayers(LayerMask.GetMask("Water")))
         {
             //Disparamos el Trigger de la Animacion de Muerte
@@ -728,6 +728,18 @@ public class PlayerMovement : MonoBehaviour
                 //Activamos el flag para empezar a calcular el tiempo de retroceso por impacto de Ataque
                 takeAttackImpactTime = true;
             }
+        }
+
+        if (mCollider.IsTouchingLayers(LayerMask.GetMask("Pikes")))
+        {
+            //Disparamos el Trigger de la Animacion de Muerte
+            MAnimator.SetTrigger("Death");
+
+            //Reproducimos sonido de Agua
+            AudioManager.instance.PlaySfx("FallingPikes");
+
+            //Desactivamos el Flag de Vivo
+            IsAlive = false;
         }
     }
 }

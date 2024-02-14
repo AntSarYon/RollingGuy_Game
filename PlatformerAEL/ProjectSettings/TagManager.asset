@@ -12,6 +12,7 @@ TagManager:
   - Enemy
   - MapLimit
   - VictoryPoint
+  - Pikes
   layers:
   - Default
   - TransparentFX
@@ -26,7 +27,7 @@ TagManager:
   - Player
   - Enemy
   - VictoryPoint
-  - 
+  - Pikes
   - 
   - 
   - 
@@ -52,7 +53,7 @@ TagManager:
   - name: Background
     uniqueID: 2128606253
     locked: 0
-  - name: Props
+  - name: PropsBackground
     uniqueID: 425464171
     locked: 0
   - name: Checkpoint
@@ -67,6 +68,12 @@ TagManager:
   - name: Water
     uniqueID: 3383486495
     locked: 0
+  - name: Pikes
+    uniqueID: 929417857
+    locked: 0
   - name: Platforms
     uniqueID: 740856315
+    locked: 0
+  - name: PropsFront
+    uniqueID: 2799267509
     locked: 0
