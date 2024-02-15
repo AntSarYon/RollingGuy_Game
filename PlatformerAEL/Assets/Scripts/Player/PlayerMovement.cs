@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
     //Variables de Velocidad
     [Header("Velocidad de Movimiento")]
     [SerializeField]
-    private float runSpeed = 8.25f;
+    private float runSpeed = 8.5f;
     //- - - - - - - 
     [Header("Velocidad de Salto")]
     [SerializeField]
