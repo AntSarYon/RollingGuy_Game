@@ -130,7 +130,7 @@ public class EnemyIA : MonoBehaviour
         if (collision.transform.CompareTag("Player"))
         {
             //Si no me esta atacando; llamo al Evento de hacer Daño
-            if(!collision.gameObject.GetComponent<PlayerMovement>().IsAttacking)
+            if (!collision.gameObject.GetComponent<PlayerMovement>().IsAttacking)
             {
                 //Seteamos el Daño que será aplicado al jugador
                 GameManager.Instance.DamageReceivedInProgress = attackDamage;
@@ -141,9 +141,12 @@ public class EnemyIA : MonoBehaviour
         }
     }
 
-    // - - - - - - - - - - - - - - N U E V O - - - - - - - - - - - - -- - - - - - - - - 
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        
+    }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
         //Si he colisionado con el Jugador...
         if (collision.transform.CompareTag("Player"))
@@ -169,9 +172,16 @@ public class EnemyIA : MonoBehaviour
                 //Disminuimos la Vida en base al Daño recibido
                 vida -= recievedDamage;
 
-                
+
             }
         }
+    }
+
+    // - - - - - - - - - - - - - - N U E V O - - - - - - - - - - - - -- - - - - - - - - 
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        
     }
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - -- - - - - - - - - - - - - - - - - - - - - - -

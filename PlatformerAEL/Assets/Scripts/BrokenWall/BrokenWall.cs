@@ -46,8 +46,29 @@ public class BrokenWall : MonoBehaviour
     }
 
     //-----------------------------------------------------------
-
+    /*
     private void OnTriggerEnter2D(Collider2D collision)
+    {
+        //Si el jugador entra en xontacto con nosotros...
+        if (collision.CompareTag("Player"))
+        {
+            //Si aun no esta roto
+            if (!broken)
+            {
+                //Activamos el Flag de Broken
+                broken = true;
+
+                //Reproducimos el ruido de algo rompiendose
+                AudioManager.instance.PlaySfx("Damage3");
+
+                //Reproducimos la Animacion de romperse
+                mAnimator.Play("Break");
+            }
+
+        }
+    }*/
+
+    private void OnTriggerStay2D(Collider2D collision)
     {
         //Si el jugador entra en xontacto con nosotros...
         if (collision.CompareTag("Player"))

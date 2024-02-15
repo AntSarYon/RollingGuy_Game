@@ -308,14 +308,22 @@ public class PlayerMovement : MonoBehaviour
     private void ControlarSaltosDePared()
     {
         //Obtenemos una posicion referencial sobre el centro de nuestro personaje
-        Vector3 posicionReferencia = new Vector3(transform.position.x, transform.position.y-0.30f, transform.position.z);
-        
+        Vector3 posicionReferencia1 = new Vector3(transform.position.x, transform.position.y-0.30f, transform.position.z);
+        Vector3 posicionReferencia2 = new Vector3(transform.position.x, transform.position.y - 0.50f, transform.position.z);
+        Vector3 posicionReferencia3 = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+
         //Creamos 2 raycast hacia ambos lados para comprobar si hay una plataforma (muro) cerca
-        RaycastHit2D rcLeft = Physics2D.Raycast(posicionReferencia, Vector2.left, 0.53f, capaTerreno);
-        RaycastHit2D rcRight = Physics2D.Raycast(posicionReferencia, Vector2.right, 0.53f, capaTerreno);
+        RaycastHit2D rcLeft1 = Physics2D.Raycast(posicionReferencia1, Vector2.left, 0.53f, capaTerreno);
+        RaycastHit2D rcRight1 = Physics2D.Raycast(posicionReferencia1, Vector2.right, 0.53f, capaTerreno);
+
+        RaycastHit2D rcLeft2 = Physics2D.Raycast(posicionReferencia2, Vector2.left, 0.53f, capaTerreno);
+        RaycastHit2D rcRight2 = Physics2D.Raycast(posicionReferencia2, Vector2.right, 0.53f, capaTerreno);
+
+        RaycastHit2D rcLeft3 = Physics2D.Raycast(posicionReferencia3, Vector2.left, 0.53f, capaTerreno);
+        RaycastHit2D rcRight3 = Physics2D.Raycast(posicionReferencia3, Vector2.right, 0.53f, capaTerreno);
 
         //Si los raycast detectan terreno al cual aferrarse
-        if (rcLeft || rcRight)
+        if (rcLeft1 || rcRight1 || rcLeft2 || rcRight2 || rcLeft3 || rcRight3)
         {
             //Activamos los Flag de Pared Pr�xima
             enPared = true;
@@ -681,8 +689,16 @@ public class PlayerMovement : MonoBehaviour
         Gizmos.DrawRay(posicionReferenciaX2, Vector2.down * 0.75f);
 
         Vector3 posicionReferencia = new Vector3(this.transform.position.x, transform.position.y - 0.30f, transform.position.z);
+
+        Vector3 posicionReferencia2 = new Vector3(transform.position.x, transform.position.y - 0.50f, transform.position.z);
+        Vector3 posicionReferencia3 = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+
         Gizmos.DrawRay(posicionReferencia, Vector2.left * 0.53f);
         Gizmos.DrawRay(posicionReferencia, Vector2.right * 0.53f);
+        Gizmos.DrawRay(posicionReferencia2, Vector2.left * 0.53f);
+        Gizmos.DrawRay(posicionReferencia2, Vector2.right * 0.53f);
+        Gizmos.DrawRay(posicionReferencia3, Vector2.left * 0.53f);
+        Gizmos.DrawRay(posicionReferencia3, Vector2.right * 0.53f);
     }
 
     #endregion
