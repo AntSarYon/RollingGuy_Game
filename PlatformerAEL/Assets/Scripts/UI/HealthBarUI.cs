@@ -50,7 +50,7 @@ public class HealthBarUI : MonoBehaviour
         mSlider.value = Mathf.Lerp(sliderInitialValue, sliderFinalValue, interpolation);
 
         //Incrementamos el factor de Interpolacion cada frame
-        interpolation += 0.8f * Time.deltaTime;
+        interpolation += 0.9f * Time.deltaTime;
 
         //Comprobamos si la interpolacion ha llegado a 1
         if (interpolation >= 1.0f)
