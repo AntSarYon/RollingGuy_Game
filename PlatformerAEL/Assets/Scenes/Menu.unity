@@ -1262,7 +1262,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Spin Guy
+  m_text: Rolling Guy
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 200527ec7521c0645aa652fbdd94142d, type: 2}
   m_sharedMaterial: {fileID: 3695984267242100752, guid: 200527ec7521c0645aa652fbdd94142d, type: 2}
@@ -1434,6 +1434,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 141900416}
+        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
+        m_MethodName: PlayOption
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &591914917
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1484,6 +1496,7 @@ GameObject:
   - component: {fileID: 609428216}
   - component: {fileID: 609428215}
   - component: {fileID: 609428214}
+  - component: {fileID: 609428217}
   m_Layer: 5
   m_Name: BtnOptions
   m_TagString: Untagged
@@ -1567,6 +1580,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 141900416}
+        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
+        m_MethodName: PlayOption
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &609428215
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1605,6 +1630,35 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 609428212}
   m_CullTransparentMesh: 1
+--- !u!114 &609428217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 609428212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 141900416}
+          m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
+          m_MethodName: PlayOption
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &760324658
 GameObject:
   m_ObjectHideFlags: 0
@@ -2637,6 +2691,8 @@ MonoBehaviour:
     source: {fileID: 0}
   - audioSO: {fileID: 11400000, guid: ff00ddc550911574e9dd843bb639ae73, type: 2}
     source: {fileID: 0}
+  - audioSO: {fileID: 11400000, guid: ed951c35b2532a3468c61f1a63f2f24a, type: 2}
+    source: {fileID: 0}
 --- !u!1 &1518105143
 GameObject:
   m_ObjectHideFlags: 0
@@ -2943,7 +2999,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Spin Guy
+  m_text: 'Rolling Guy
 
 '
   m_isRightToLeft: 0
@@ -3184,6 +3240,7 @@ GameObject:
   - component: {fileID: 1679335252}
   - component: {fileID: 1679335251}
   - component: {fileID: 1679335250}
+  - component: {fileID: 1679335253}
   m_Layer: 5
   m_Name: BtnPlay
   m_TagString: Untagged
@@ -3208,7 +3265,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -200, y: 39}
+  m_AnchoredPosition: {x: -200, y: 14}
   m_SizeDelta: {x: 250, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1679335250
@@ -3305,6 +3362,35 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1679335248}
   m_CullTransparentMesh: 1
+--- !u!114 &1679335253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1679335248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 141900416}
+          m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
+          m_MethodName: PlayOption
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &1679873587
 GameObject:
   m_ObjectHideFlags: 0
@@ -3974,6 +4060,7 @@ GameObject:
   - component: {fileID: 1837750434}
   - component: {fileID: 1837750433}
   - component: {fileID: 1837750432}
+  - component: {fileID: 1837750435}
   m_Layer: 5
   m_Name: BtnQuit
   m_TagString: Untagged
@@ -3998,7 +4085,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -200, y: -202}
+  m_AnchoredPosition: {x: -200, y: -194}
   m_SizeDelta: {x: 250, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1837750432
@@ -4083,6 +4170,35 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1837750430}
   m_CullTransparentMesh: 1
+--- !u!114 &1837750435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1837750430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 141900416}
+          m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
+          m_MethodName: PlayOption
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &1844044160
 GameObject:
   m_ObjectHideFlags: 0

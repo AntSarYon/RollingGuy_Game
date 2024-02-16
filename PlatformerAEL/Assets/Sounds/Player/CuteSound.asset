@@ -15,7 +15,7 @@ MonoBehaviour:
   id: CuteSound
   clips:
   - {fileID: 8300000, guid: 38cde6b12c295cd48874ca4f8ca66d4e, type: 3}
-  volume: 1
+  volume: 0.75
   frequencyLevel: 2
   minPitch: 1
   maxPitch: 1

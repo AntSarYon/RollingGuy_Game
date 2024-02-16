@@ -21,8 +21,8 @@ public class RecordManager : MonoBehaviour
     {
         ControlarUnicaInstancia();
 
-        minutesRecord = 2;
-        secondsRecord = 0;
+        minutesRecord = 4;
+        secondsRecord = 30;
         pointsRecord = 0;
 
         //Iniciamos desactivando los Flags de RecordsActualizados

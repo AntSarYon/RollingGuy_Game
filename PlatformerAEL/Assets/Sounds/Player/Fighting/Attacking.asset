@@ -15,7 +15,7 @@ MonoBehaviour:
   id: Attacking
   clips:
   - {fileID: 8300000, guid: 846b35dcd1531854388dbe0a72f13468, type: 3}
-  volume: 0.5
+  volume: 0.55
   frequencyLevel: 2
   minPitch: 1
   maxPitch: 1

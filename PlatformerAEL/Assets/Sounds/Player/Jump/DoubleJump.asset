@@ -15,7 +15,7 @@ MonoBehaviour:
   id: DoubleJump
   clips:
   - {fileID: 8300000, guid: f7d8982940aef8744b92ab368fcef3e1, type: 3}
-  volume: 0.5
+  volume: 0.6
   frequencyLevel: 2
   minPitch: 1
   maxPitch: 1

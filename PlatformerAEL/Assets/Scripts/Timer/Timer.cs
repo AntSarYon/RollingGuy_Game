@@ -30,18 +30,23 @@ public class Timer : MonoBehaviour
         //Mientras el Flag de Victoria este desactivado...
         if (!VictoryCheck.Instance.Victory)
         {
-            //Incrementamos el Timer
-            timer += Time.deltaTime;
-
-            //Si el timer suma 60 segundos
-            if (timer >= 60)
+            //Mientras no estemos en Pausa
+            if (!GameManager.Instance.InPause)
             {
-                //Incrementamos el contador de Minutos en 1
-                minutes++;
+                //Incrementamos el Timer
+                timer += Time.deltaTime;
 
-                //Reiniciamos el Timer en 0
-                timer = 0.0f;
+                //Si el timer suma 60 segundos
+                if (timer >= 60)
+                {
+                    //Incrementamos el contador de Minutos en 1
+                    minutes++;
+
+                    //Reiniciamos el Timer en 0
+                    timer = 0.0f;
+                }
             }
+            
         }
     }
 }

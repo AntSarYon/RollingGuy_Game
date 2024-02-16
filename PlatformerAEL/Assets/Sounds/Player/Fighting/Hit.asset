@@ -15,7 +15,7 @@ MonoBehaviour:
   id: Hit
   clips:
   - {fileID: 8300000, guid: c7db9993598479c4994e92b8d37e911f, type: 3}
-  volume: 1
+  volume: 0.55
   frequencyLevel: 2
   minPitch: 1
   maxPitch: 1

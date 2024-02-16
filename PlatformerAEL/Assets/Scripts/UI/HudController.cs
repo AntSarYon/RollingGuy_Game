@@ -29,6 +29,9 @@ public class HudController : MonoBehaviour
     [Header("UI Menu de Victoria")]
     [SerializeField] private GameObject VictoryMenu;
 
+    [Header("UI Menu de Victoria")]
+    [SerializeField] private GameObject PauseMenu;
+
     //------------------------------------------------
 
     void Awake()
@@ -46,8 +49,9 @@ public class HudController : MonoBehaviour
         //Lo hacmeos Delegado del Evento de Victoria
         GameManager.Instance.OnVictoryAchieved += OnVicoryAchievedDelegate;
 
-        //Ocultamos el Panel de Victoria
+        //Ocultamos el Panel de Victoria y el de Pausa
         VictoryMenu.SetActive(false);
+        PauseMenu.SetActive(false);
 
         //Acualizamos al inicio de la Partida EL TXT de tiempo Record
         SetRecord();
@@ -72,6 +76,18 @@ public class HudController : MonoBehaviour
 
     void Update()
     {
+        //Si el Gamemanager tiene el Flag de Pausa activado...
+        if (GameManager.Instance.InPause)
+        {
+            //Mostramos el Menu de Pausa
+            PauseMenu.SetActive(true);
+        }
+        else
+        {
+            //Mostramos el Menu de Pausa
+            PauseMenu.SetActive(false);
+        }
+
         //Acualizamos constantemente los TXT de tiempo
         UpdateTimer();
 

@@ -29,6 +29,8 @@ public class GameManager : MonoBehaviour
 
     private float damageReceivedInProgress;
 
+    public bool InPause;
+
     #region GETTERS Y SETTERS
     public Vector3 UltimoCheckpoint { get => ultimoCheckpoint; set => ultimoCheckpoint = value; }
     public float DamageReceivedInProgress { get => damageReceivedInProgress; set => damageReceivedInProgress = value; }
@@ -49,6 +51,9 @@ public class GameManager : MonoBehaviour
     {
         //Obtenemos Referencia al Script del Player
         Player = GameObject.Find("Player").GetComponent<PlayerMovement>();
+
+        //Iniciamos con el Flag de Pausa en Falso
+        InPause = false;
 
         //Obtenemos Coordenadas del Limite del Mapa
         coorRightLimit = GameObject.Find("RightLimitCoor").transform.position;
@@ -110,7 +115,26 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        LimitarMovimientoHorizontal();
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+        {
+            if(InPause)
+                InPause = false;
+            else
+                InPause = true;
+        }
+
+        if (InPause)
+        {
+            //Pasamos la escala de tiempo a 0
+            Time.timeScale = 0;
+        }
+        else
+        {
+            //Pasamos la escala a 1 (normal)
+            Time.timeScale = 1;
+            LimitarMovimientoHorizontal();
+        }
+       
     }
 
     //-------------------------------------------------------------

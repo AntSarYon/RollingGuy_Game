@@ -34,7 +34,6 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D mRb;
     private Animator mAnimator;
     private CapsuleCollider2D mCollider;
-    private AudioSource mAudioSource;
 
     //Clips de Audios para acciones del personaje
     [Header("Sonidos de Salto")]
@@ -90,14 +89,15 @@ public class PlayerMovement : MonoBehaviour
     //Última dirección en que se estaba moviendo
     private float ultimaDirección;
 
+    private bool deathInExecution;
 
     // GETTERS y SETTERS
     public bool IsAttacking { get => isAttacking; }
     public float AttackDamage { get => attackDamage; }
     public Animator MAnimator { get => mAnimator; }
-    public AudioSource MAudioSource { get => mAudioSource; set => mAudioSource = value; }
     public bool IsAlive { get => isAlive; set => isAlive = value; }
     public Rigidbody2D MRb { get => mRb; set => mRb = value; }
+    public bool DeathInExecution { get => deathInExecution; set => deathInExecution = value; }
 
     //-----------------------------------------------------------
 
@@ -109,10 +109,11 @@ public class PlayerMovement : MonoBehaviour
         mRb = GetComponent<Rigidbody2D>();
         mAnimator = GetComponent<Animator>();
         mCollider = GetComponent<CapsuleCollider2D>();
-        mAudioSource = GetComponent<AudioSource>();
 
         //Obtenemos referencia al GameManager
         gameManager = GameManager.Instance;
+
+        DeathInExecution = false;
 
         //Inicializamos
 
@@ -179,7 +180,7 @@ public class PlayerMovement : MonoBehaviour
     #region DELEGADOS DE EVENTOS 
     private void OnPlayerDeathDelegate()
     {
-        
+       
     }
 
     //--------------------------------------------------------------
@@ -191,6 +192,9 @@ public class PlayerMovement : MonoBehaviour
 
         //Reactivamos el Flag de está vivo
         IsAlive = true;
+
+        //Desactivamos el flag de muerte en nejecución
+        DeathInExecution = false;
 
         //Reiniciamos los Flags
         ResetFlags();
@@ -220,7 +224,7 @@ public class PlayerMovement : MonoBehaviour
         //Controlamos que el sonido solo de dispare 1 vez
         if (!isBeingDamage)
         {
-            mAudioSource.PlayOneShot(clipImpacto, 0.60f); 
+            AudioManager.instance.PlaySfx("Hit");
         }
 
         //Activamos el Flag de recibiendo daño
@@ -360,7 +364,7 @@ public class PlayerMovement : MonoBehaviour
             //Iniciar el Flag para tomar tiempo de ataque
             takeAttackTime = true;
 
-            mAudioSource.PlayOneShot(clipAtaque, 0.75f);
+            AudioManager.instance.PlaySfx("Attacking");
 
         }
         //Si nos enocntramos tomando tiempo de ataque
@@ -405,8 +409,8 @@ public class PlayerMovement : MonoBehaviour
             if (actualHitTime >= maxHitTime)
             {
                 // - - - -  - - - - -- N U E V O - - - -- -  - -- - - -  -- - - - --
-                //Si su vida llegó a 0 (Murió)
-                if (!IsAlive)
+                //Si su vida llegó a 0 (Murió), y aun no se ha ejecutado la muerte 
+                if (!IsAlive && !deathInExecution)
                 {
                     //Disparamos el Trigger de la Animacion de Muerte
                     MAnimator.SetTrigger("Death");
@@ -592,7 +596,8 @@ public class PlayerMovement : MonoBehaviour
 
                         //Activamos el FlagDeAnimacion de Jumping
                         mAnimator.SetBool("IsJumping", true);
-                        mAudioSource.PlayOneShot(saltos[0], 0.75f);
+
+                        AudioManager.instance.PlaySfx("Jump");
 
                         //Activamos el Flag para indicar que
                         //es posible saltar otra vez
@@ -615,7 +620,7 @@ public class PlayerMovement : MonoBehaviour
 
                         //Activamos el FlagDeAnimacion de DobleJumping
                         mAnimator.SetBool("IsDoubleJumping", true);
-                        mAudioSource.PlayOneShot(saltos[1], 0.75f);
+                        AudioManager.instance.PlaySfx("DoubleJump");
 
                         //Desactivamos el Flag para que ya no pueda efectuar otro ataque
                         canDoubleJump = false;
@@ -632,13 +637,14 @@ public class PlayerMovement : MonoBehaviour
 
                         //Activamos el FlagDeAnimacion de Jumping
                         mAnimator.SetBool("IsJumping", true);
-                        mAudioSource.PlayOneShot(saltos[0], 0.75f);
 
-                        //Desctivamos el Flag para indicar que No esta atacando
-                        //isAttacking = false;
+                        AudioManager.instance.PlaySfx("Jump");
 
-                        //Dejamos el Flag activado para que pueda efectuar un ataque
-                        canDoubleJump = true;
+                    //Desctivamos el Flag para indicar que No esta atacando
+                    //isAttacking = false;
+
+                    //Dejamos el Flag activado para que pueda efectuar un ataque
+                    canDoubleJump = true;
                     }
                 }
             }
@@ -757,5 +763,11 @@ public class PlayerMovement : MonoBehaviour
             //Desactivamos el Flag de Vivo
             IsAlive = false;
         }
+    }
+
+    public void AnnounceDeath()
+    {
+        //Activamops el Flag de Muerte en ejecución
+        deathInExecution = true;
     }
 }

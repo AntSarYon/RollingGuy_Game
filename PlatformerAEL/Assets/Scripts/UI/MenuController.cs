@@ -74,4 +74,9 @@ public class MenuController : MonoBehaviour
     {
         AudioManager.instance.PlaySfx("Hit");
     }
+
+    public void PlayOption()
+    {
+        AudioManager.instance.PlaySfx("Option");
+    }
 }

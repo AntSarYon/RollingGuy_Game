@@ -7,11 +7,11 @@ public class CloudsParallaxEfect : MonoBehaviour
     void Update()
     {
         //Si la posicion en X llega a las 6 unidades
-        if (transform.localPosition.x <= 6)
+        if (transform.localPosition.x <= -94.18)
         {
             //Lo regresamos a su posicion original
             transform.localPosition = new Vector3(
-            37,
+            -63.195f,
             transform.localPosition.y,
             transform.localPosition.z
             );
